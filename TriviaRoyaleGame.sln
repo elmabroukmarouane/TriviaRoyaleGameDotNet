@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36310.24
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriviaRoyaleGame.Client", "TriviaRoyaleGame.Client\TriviaRoyaleGame.Client.csproj", "{98F79AA7-4399-4307-9C8C-A834E61926DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriviaRoyaleGame.Infrastructure", "TriviaRoyaleGame.Infrastructure\TriviaRoyaleGame.Infrastructure.csproj", "{78F667CB-A6AD-46F2-9096-D33180A5BBFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriviaRoyaleGame.Api", "TriviaRoyaleGame.Api\TriviaRoyaleGame.Api.csproj", "{304BC904-4E9C-4F4C-9E7F-A715D087E0DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriviaRoyaleGame.Domain", "TriviaRoyaleGame.Domain\TriviaRoyaleGame.Domain.csproj", "{5A6722D7-CC25-450A-992B-CE96B2A236F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriviaRoyaleGame.UnitOfWork", "TriviaRoyaleGame.UnitOfWork\TriviaRoyaleGame.UnitOfWork.csproj", "{59C2C566-75F7-48D1-92A5-26CF41102605}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriviaRoyaleGame.Business", "TriviaRoyaleGame.Business\TriviaRoyaleGame.Business.csproj", "{83A13DBA-84AB-4C58-BC6D-40D63A40DFB5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98F79AA7-4399-4307-9C8C-A834E61926DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98F79AA7-4399-4307-9C8C-A834E61926DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98F79AA7-4399-4307-9C8C-A834E61926DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98F79AA7-4399-4307-9C8C-A834E61926DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78F667CB-A6AD-46F2-9096-D33180A5BBFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78F667CB-A6AD-46F2-9096-D33180A5BBFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78F667CB-A6AD-46F2-9096-D33180A5BBFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78F667CB-A6AD-46F2-9096-D33180A5BBFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{304BC904-4E9C-4F4C-9E7F-A715D087E0DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{304BC904-4E9C-4F4C-9E7F-A715D087E0DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{304BC904-4E9C-4F4C-9E7F-A715D087E0DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{304BC904-4E9C-4F4C-9E7F-A715D087E0DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A6722D7-CC25-450A-992B-CE96B2A236F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A6722D7-CC25-450A-992B-CE96B2A236F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A6722D7-CC25-450A-992B-CE96B2A236F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A6722D7-CC25-450A-992B-CE96B2A236F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59C2C566-75F7-48D1-92A5-26CF41102605}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59C2C566-75F7-48D1-92A5-26CF41102605}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59C2C566-75F7-48D1-92A5-26CF41102605}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59C2C566-75F7-48D1-92A5-26CF41102605}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83A13DBA-84AB-4C58-BC6D-40D63A40DFB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83A13DBA-84AB-4C58-BC6D-40D63A40DFB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83A13DBA-84AB-4C58-BC6D-40D63A40DFB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83A13DBA-84AB-4C58-BC6D-40D63A40DFB5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AE0C1759-FA13-4094-A09D-8399141B9DFA}
+	EndGlobalSection
+EndGlobal

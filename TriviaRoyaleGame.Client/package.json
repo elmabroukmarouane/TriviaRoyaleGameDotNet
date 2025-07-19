@@ -1,0 +1,20 @@
+{
+  "name": "triviaroyalegame.client",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "tailwindcss-cli -i ./input.css -o ./wwwroot/css/app.css",
+    "watch:css": "tailwindcss-cli -i ./input.css -o ./wwwroot/css/app.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11",
+    "tailwindcss-cli": "^0.1.2"
+  },
+  "description": ""
+}
