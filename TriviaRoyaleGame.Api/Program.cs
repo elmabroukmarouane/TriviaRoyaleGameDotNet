@@ -24,7 +24,7 @@ builder.Services.AddConnection(builder.Configuration, builder.Environment);
 builder.Services.AddEmailSmtpConfigurationExtension(builder.Configuration);
 builder.Services.AddSERVICES(builder.Configuration, builder.Environment);
 builder.Services.AddJWT(builder.Configuration);
-builder.Services.AddAutoMapper(cfg => {}, AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAUTOMAPPER(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddCORS(builder.Configuration);
 builder.Services.AddSignalR(options =>
 {
