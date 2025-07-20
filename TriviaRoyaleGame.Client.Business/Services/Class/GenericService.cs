@@ -44,7 +44,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                     actionName: "Services.Class.GenericService - GetEntitiesAsync()",
                     exception: ex
                 );
-                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ApiAppLogViewModel()
+                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
                 {
                     Level = "Error",
                     Message = log,
@@ -73,7 +73,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                     actionName: "Services.Class.GenericService - GetEntitiesAsync()",
                     exception: ex
                 );
-                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ApiAppLogViewModel()
+                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
                 {
                     Level = "Error",
                     Message = log,
@@ -108,7 +108,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                     actionName: "Services.Class.GenericService - GetEntitiesAsync()",
                     exception: ex
                 );
-                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ApiAppLogViewModel()
+                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
                 {
                     Level = "Error",
                     Message = log,
@@ -139,7 +139,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                     actionName: "Services.Class.GenericService - CreateAsync()",
                     exception: ex
                 );
-                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ApiAppLogViewModel()
+                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
                 {
                     Level = "Error",
                     Message = log,
@@ -174,7 +174,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                     actionName: "Services.Class.GenericService - CreateAsync()",
                     exception: ex
                 );
-                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ApiAppLogViewModel()
+                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
                 {
                     Level = "Error",
                     Message = log,
@@ -205,7 +205,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                     actionName: "Services.Class.GenericService - UpdateAsync()",
                     exception: ex
                 );
-                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ApiAppLogViewModel()
+                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
                 {
                     Level = "Error",
                     Message = log,
@@ -241,7 +241,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                     actionName: "Services.Class.GenericService - UpdateAsync()",
                     exception: ex
                 );
-                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ApiAppLogViewModel()
+                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
                 {
                     Level = "Error",
                     Message = log,
@@ -276,7 +276,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                     actionName: "Services.Class.GenericService - DeleteAsync()",
                     exception: ex
                 );
-                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ApiAppLogViewModel()
+                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
                 {
                     Level = "Error",
                     Message = log,
@@ -315,7 +315,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                     actionName: "Services.Class.GenericService - DeleteAsync()",
                     exception: ex
                 );
-                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ApiAppLogViewModel()
+                await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
                 {
                     Level = "Error",
                     Message = log,

@@ -1,11 +1,13 @@
-﻿namespace TriviaRoyaleGame.Client.Domain.Models
+﻿using TriviaRoyaleGame.Infrastructure.Models.Classes;
+
+namespace TriviaRoyaleGame.Api.DtoModel.Models
 {
     /// <summary>
     /// Level: Info, Warning, Error
     /// Message: Log message
     /// Source: "Web", "Android", "Windows Desktop", "Linux Desktop", "iOS"
     /// </summary>
-    public class ApiAppLogViewModel : Entity
+    public class ClientAppLogViewModel : Entity
     {
         public string? Level { get; set; }
         public string? Message { get; set; }
