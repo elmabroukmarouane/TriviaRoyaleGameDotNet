@@ -40,6 +40,13 @@ public static class AddServices
         self.AddTransient<IGenericTruncateQuery<Member>, GenericTruncateQuery<Member>>();
         self.AddTransient<IGenericService<Member>, GenericService<Member>>();
 
+        self.AddTransient<IGenericCreateCommand<ClientAppLog>, GenericCreateCommand<ClientAppLog>>();
+        self.AddTransient<IGenericUpdateCommand<ClientAppLog>, GenericUpdateCommand<ClientAppLog>>();
+        self.AddTransient<IGenericGetEntitiesQuery<ClientAppLog>, GenericGetEntitiesQuery<ClientAppLog>>();
+        self.AddTransient<IGenericDeleteQuery<ClientAppLog>, GenericDeleteQuery<ClientAppLog>>();
+        self.AddTransient<IGenericTruncateQuery<ClientAppLog>, GenericTruncateQuery<ClientAppLog>>();
+        self.AddTransient<IGenericService<ClientAppLog>, GenericService<ClientAppLog>>();
+
         self.AddTransient<IUserCreateCommand, UserCreateCommand>();
         self.AddTransient<IUserUpdateCommand, UserUpdateCommand>();
         self.AddTransient<IGenericGetEntitiesQuery<User>, GenericGetEntitiesQuery<User>>();
