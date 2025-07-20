@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriviaRoyaleGame.UnitOfWork
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriviaRoyaleGame.Business", "TriviaRoyaleGame.Business\TriviaRoyaleGame.Business.csproj", "{83A13DBA-84AB-4C58-BC6D-40D63A40DFB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriviaRoyaleGame.Client.Domain", "TriviaRoyaleGame.Client.Domain\TriviaRoyaleGame.Client.Domain.csproj", "{58BC413D-F585-4DFD-B7B0-415CF894704A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriviaRoyaleGame.Client.Business", "TriviaRoyaleGame.Client.Business\TriviaRoyaleGame.Client.Business.csproj", "{C68E0DD3-BCB8-421C-94F1-CE1A2F38E4ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{83A13DBA-84AB-4C58-BC6D-40D63A40DFB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83A13DBA-84AB-4C58-BC6D-40D63A40DFB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83A13DBA-84AB-4C58-BC6D-40D63A40DFB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58BC413D-F585-4DFD-B7B0-415CF894704A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58BC413D-F585-4DFD-B7B0-415CF894704A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58BC413D-F585-4DFD-B7B0-415CF894704A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58BC413D-F585-4DFD-B7B0-415CF894704A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C68E0DD3-BCB8-421C-94F1-CE1A2F38E4ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C68E0DD3-BCB8-421C-94F1-CE1A2F38E4ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C68E0DD3-BCB8-421C-94F1-CE1A2F38E4ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C68E0DD3-BCB8-421C-94F1-CE1A2F38E4ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

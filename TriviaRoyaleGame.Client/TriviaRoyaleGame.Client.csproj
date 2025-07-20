@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TriviaRoyaleGame.Infrastructure\TriviaRoyaleGame.Infrastructure.csproj" />
+    <ProjectReference Include="..\TriviaRoyaleGame.Client.Business\TriviaRoyaleGame.Client.Business.csproj" />
   </ItemGroup>
 
 </Project>

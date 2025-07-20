@@ -1,5 +1,4 @@
 ﻿@page "/quiz"
-@using TriviaRoyaleGame.Infrastructure.Models.Classes
 
 <PageTitle>Trivia Quiz</PageTitle>
 
@@ -72,7 +71,7 @@
 
 
 @code {
-    List<Question> Questions = [
+    List<QuestionViewModel> Questions = [
         new() {
             Text = "Capital of France ?",
             Choices = [ "London", "Paris", "Berlin", "Rome" ],
@@ -92,7 +91,7 @@
 
     int score = 0;
     int currentQuestionIndex = 0;
-    Question? currentQuestion;
+    QuestionViewModel? currentQuestion;
     bool isCorrect = false;
     bool answerGiven = false;
     bool gameOver = false;
