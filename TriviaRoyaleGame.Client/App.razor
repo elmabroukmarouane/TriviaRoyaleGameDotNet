@@ -1,20 +1,3 @@
 ﻿<CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="new [] {typeof(MainLayout).Assembly}">
-        <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-                <Authorizing>
-                    <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-                </Authorizing>
-                <NotAuthorized>
-                    <LoginRedirect />
-                </NotAuthorized>
-            </AuthorizeRouteView>
-        </Found>
-        <NotFound>
-            <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(NotFoundLayout)">
-                <NotFound />
-            </LayoutView>
-        </NotFound>
-    </Router>
+    <AppLayout />
 </CascadingAuthenticationState>

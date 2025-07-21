@@ -1,0 +1,40 @@
+﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthProvider
+
+@if (_authState == null)
+{
+    <!-- Show spinner until authentication is fully resolved -->
+    <LayoutView Layout="@typeof(LoginLayout)">
+        <LoginRedirect />
+    </LayoutView>
+}
+else
+{
+    <Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="new[] { typeof(MainLayout).Assembly }">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@LayoutToUse">
+                <NotAuthorized>
+                    <LoginRedirect />
+                </NotAuthorized>
+            </AuthorizeRouteView>
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(NotFoundLayout)">
+                <NotFound />
+            </LayoutView>
+        </NotFound>
+    </Router>
+}
+
+@code {
+    private AuthenticationState? _authState;
+
+    private Type LayoutToUse => _authState?.User?.Identity?.IsAuthenticated == true
+        ? typeof(MainLayout)
+        : typeof(LoginLayout);
+
+    protected override async Task OnInitializedAsync()
+    {
+        _authState = await AuthProvider.GetAuthenticationStateAsync();
+    }
+}
