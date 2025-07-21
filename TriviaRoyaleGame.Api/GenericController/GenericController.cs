@@ -16,7 +16,6 @@ using System.Net;
 
 namespace TriviaRoyaleGame.GenericController
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class GenericController<TEntity, TEntityViewModel>(

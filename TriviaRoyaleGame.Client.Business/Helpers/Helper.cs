@@ -68,21 +68,28 @@ public static class Helper
         return tokenResponse.Claims.FirstOrDefault(c => c.Type == "user")?.Value;
     }
 
-    public static string CreateToken(string email, string? password)
+    public static string CreateToken(string email, string? password, JwtAppSettings? jwtAppSettings)
     {
         var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.Email, email),
                 new Claim(JwtRegisteredClaimNames.Prn, password ?? string.Empty)
             };
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(JwtAppSettings.Key));
+        //var key = new SymmetricSecurityKey(
+        //    Encoding.UTF8.GetBytes(JwtAppSettings.Key));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtAppSettings!.Key!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
+        //var token = new JwtSecurityToken(
+        //    issuer: JwtAppSettings.Issuer,
+        //    audience: JwtAppSettings.Audience,
+        //    claims: claims,
+        //    expires: DateTime.Now.AddYears(JwtAppSettings.JwtTokenValidite),
+        //    signingCredentials: creds);
         var token = new JwtSecurityToken(
-            issuer: JwtAppSettings.Issuer,
-            audience: JwtAppSettings.Audience,
+            issuer: jwtAppSettings.Issuer,
+            audience: jwtAppSettings.Audience,
             claims: claims,
-            expires: DateTime.Now.AddYears(JwtAppSettings.JwtTokenValidite),
+            expires: DateTime.Now.AddYears((int)jwtAppSettings!.JwtTokenValidite!),
             signingCredentials: creds);
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
@@ -90,7 +97,7 @@ public static class Helper
     public static UserViewModel? DecryptAndDeserializeUserViewModel(string? token)
     {
         if(token is null) return null;
-        var userLoggedString = DecryptToken(token?.ToString());
+        var userLoggedString = DecryptToken(token);
         var userLogged = JsonSerializer.Deserialize<UserViewModel>(userLoggedString!);
         return userLogged;
     }

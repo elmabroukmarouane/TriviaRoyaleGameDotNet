@@ -43,14 +43,14 @@ try
     };
     builder.Services.AddSingleton(appSettingsBaseSettingsApp);
 
-    //var appSettingsJwt = builder.Configuration.GetSection("Jwt").Get<JwtAppSettings>() ?? new()
-    //{
-    //    Key = string.Empty,
-    //    Issuer = string.Empty,
-    //    Audience = string.Empty,
-    //    JwtTokenValidite = 0
-    //};
-    //builder.Services.AddSingleton(appSettingsJwt);
+    var appSettingsJwt = builder.Configuration.GetSection("Jwt").Get<JwtAppSettings>() ?? new()
+    {
+        Key = string.Empty,
+        Issuer = string.Empty,
+        Audience = string.Empty,
+        JwtTokenValidite = 0
+    };
+    builder.Services.AddSingleton(appSettingsJwt);
 }
 catch (Exception ex)
 {
@@ -62,7 +62,7 @@ builder.Services.AddSingleton<ISourceAppProvider>(new SourceAppProvider("Web"));
 
 builder.Services.AddScoped<DialogService>();
 builder.Services.AddScoped<TooltipService>();
-builder.Services.AddScoped<AuthenticationStateProvider, BackOfficeAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, ClientAppAuthenticationStateProvider>();
 builder.Services.AddTransient<IGenericService<ClientAppLogViewModel>, GenericService<ClientAppLogViewModel>>();
 builder.Services.AddTransient<IGenericService<MemberViewModel>, GenericService<MemberViewModel>>();
 builder.Services.AddTransient<IGenericService<QuestionViewModel>, GenericService<QuestionViewModel>>();

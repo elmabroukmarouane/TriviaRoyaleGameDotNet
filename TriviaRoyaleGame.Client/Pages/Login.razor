@@ -1,44 +1,48 @@
 ﻿@page "/login"
 @layout LoginLayout
 
-<RadzenAlert Variant="Radzen.Variant.Filled" AlertStyle="@AlertStyle" Size="Radzen.AlertSize.Medium" Shade="Radzen.Shade.Light" AllowClose=false>
+<RadzenAlert Variant="Radzen.Variant.Filled" AlertStyle="@AlertStyle" Size="Radzen.AlertSize.Medium" Shade="Radzen.Shade.Light" AllowClose="false">
     @MessageAlert
 </RadzenAlert>
-<RadzenTemplateForm TItem="UserViewModel" Data=@UserViewModel Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
-    <div class="mb-3">
-        <RadzenText class="form-label" TextStyle="TextStyle.Subtitle2" TagName="TagName.Auto">Email</RadzenText>
-        <RadzenTextBox Name="Email" @bind-Value=UserViewModel.Email type="email" class="form-control" Placeholder="Entrer l'email" autofocus />
+
+<RadzenTemplateForm TItem="UserViewModel" Data="@UserViewModel" Submit="@OnSubmit" InvalidSubmit="@OnInvalidSubmit">
+    <div class="mb-4">
+        <RadzenText class="block text-sm font-medium text-gray-700 mb-1" TextStyle="TextStyle.Subtitle2" TagName="TagName.Auto">Email</RadzenText>
+        <RadzenTextBox Name="Email" @bind-Value="UserViewModel.Email" type="email" class="w-full border rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" Placeholder="Entrer l'email" autofocus />
         <RadzenRequiredValidator Component="Email" Text="Champs obligatoire" Popup="false" />
         <RadzenEmailValidator Component="Email" Text="Renseigner un email valide" Popup="false" />
     </div>
-    <div class="mb-3 form-password-toggle">
-        <div class="d-flex justify-content-between">
-            <RadzenText class="form-label" TextStyle="TextStyle.Subtitle2" TagName="TagName.Auto">Mot de passe</RadzenText>
-        </div>
-        <div class="input-group input-group-merge">
-            <RadzenTextBox Name="Password" @bind-Value=UserViewModel.Password type="@(ShowHidePassword ? "text" : "password")" class="form-control" Placeholder="Entrer le mot de passe'" aria-describedby="password" />
-            <span class="input-group-text cursor-pointer" @onclick="ShowHidePasswordMethode"><i class="bx bx-@(ShowHidePassword ? "show" : "hide")"></i></span>
+
+    <div class="mb-4">
+        <RadzenText class="block text-sm font-medium text-gray-700 mb-1" TextStyle="TextStyle.Subtitle2" TagName="TagName.Auto">Mot de passe</RadzenText>
+        <div class="relative">
+            <RadzenTextBox Name="Password" @bind-Value="UserViewModel.Password" type="@(ShowHidePassword ? "text" : "password")"
+                           class="w-full border rounded-lg px-3 py-2 pr-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           Placeholder="Entrer le mot de passe" aria-describedby="password" />
+            <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 cursor-pointer" @onclick="ShowHidePasswordMethode">
+                <i class="bx bx-@(ShowHidePassword ? "show" : "hide")"></i>
+            </span>
         </div>
         <RadzenRequiredValidator Component="Password" Text="Champs obligatoire" Popup="false" />
         <RadzenLengthValidator Component="Password" Min="6" Text="Le mot de passe doit avoir minimun 6 caractères" Popup="false" />
         <RadzenLengthValidator Component="Password" Max="25" Text="Le mot de passe doit avoir maximun 25 caractères" Popup="false" />
     </div>
-    <div class="mb-3">
-        <div class="form-check" style="width:auto">
-            <div class="row">
-                <div class="col-1 col-sm-1 col-md-1 col-lg-2 col-xl-2">
-                    <RadzenSwitch id="remember-me" class="form-check-input" Style="border: none !important;" />
-                </div>
-                <div class="col-11 col-sm-11 col-md-11 col-lg-10 col-xl-10 text-left">
-                    <RadzenText TagName="TagName.Auto" class="form-check-label" for="remember-me"> Se souvenir de moi </RadzenText>
-                </div>
-            </div>
-        </div>
+
+    <div class="mb-4 flex items-center space-x-2">
+        <RadzenSwitch id="remember-me" class="form-check-input border-none" />
+        <RadzenText TagName="TagName.Auto" class="text-gray-700" for="remember-me">Se souvenir de moi</RadzenText>
     </div>
-    <div class="mb-3">
-        <RadzenButton ButtonType="Radzen.ButtonType.Submit" IsBusy="IsBusy" Icon="login" Text="Login" class="d-grid w-100" ButtonStyle="Radzen.ButtonStyle.Success" />
+
+    <div>
+        <RadzenButton ButtonType="Radzen.ButtonType.Submit"
+                      IsBusy="IsBusy"
+                      Icon="login"
+                      Text="Login"
+                      class="w-full"
+                      Style="background-color: #10B981; color: white;" />
     </div>
 </RadzenTemplateForm>
+
 
 @code {
 
@@ -66,9 +70,9 @@
     private bool IsBusy { get; set; } = false;
     protected override async Task OnInitializedAsync()
     {
-        var backOfficeAuthenticationStateProvider = (BackOfficeAuthenticationStateProvider)AuthenticationStateProvider!;
+        var backOfficeAuthenticationStateProvider = (ClientAppAuthenticationStateProvider)AuthenticationStateProvider!;
         var userLogged = await backOfficeAuthenticationStateProvider.GetAuthenticationStateAsync();
-        if (userLogged != null && userLogged.User.Identity!.IsAuthenticated) Navigation!.NavigateTo("/");
+        if (userLogged != null && userLogged.User.Identity!.IsAuthenticated) Navigation!.NavigateTo("/", true);
         return;
     }
 
@@ -102,8 +106,9 @@
             }
             else
             {
-                await LocalStorage!.SetItemEncryptedAsync("token", token);
-                var backOfficeAuthenticationStateProvider = (BackOfficeAuthenticationStateProvider)AuthenticationStateProvider!;
+                var tokenString = JsonSerializer.Serialize(token);
+                await LocalStorage!.SetItemEncryptedAsync("token", tokenString);
+                var backOfficeAuthenticationStateProvider = (ClientAppAuthenticationStateProvider)AuthenticationStateProvider!;
                 await backOfficeAuthenticationStateProvider.UpdateAuthenticationState(userLogged);
                 IsBusy = false;
                 Navigation!.NavigateTo("/");

@@ -117,10 +117,9 @@ namespace TriviaRoyaleGame.Business.Services.Classes
             if (user != null && keyString != null && issuerString != null && audienceString != null)
             {
                 var claims = new[] {
-                new Claim("user", JsonSerializer.Serialize(user))
-            };
-                var key = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(keyString));
+                    new Claim("user", JsonSerializer.Serialize(user))
+                };
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
                 var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
                 var token = new JwtSecurityToken(
                     issuer: issuerString,
