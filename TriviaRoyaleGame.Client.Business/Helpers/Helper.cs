@@ -68,11 +68,11 @@ public static class Helper
         return tokenResponse.Claims.FirstOrDefault(c => c.Type == "user")?.Value;
     }
 
-    public static string CreateToken(string email, string password)
+    public static string CreateToken(string email, string? password)
     {
         var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.Email, email),
-                new Claim(JwtRegisteredClaimNames.Prn, password)
+                new Claim(JwtRegisteredClaimNames.Prn, password ?? string.Empty)
             };
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(JwtAppSettings.Key));

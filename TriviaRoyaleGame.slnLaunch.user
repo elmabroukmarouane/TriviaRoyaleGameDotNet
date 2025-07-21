@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Nouveau profil",
+    "Projects": [
+      {
+        "Path": "TriviaRoyaleGame.Client\\TriviaRoyaleGame.Client.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "TriviaRoyaleGame.Api\\TriviaRoyaleGame.Api.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

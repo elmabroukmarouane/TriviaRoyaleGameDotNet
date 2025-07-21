@@ -1,5 +1,4 @@
 ﻿@page "/login"
-@using BackOffice.Hybrid.Components.Authentication
 @layout LoginLayout
 
 <RadzenAlert Variant="Radzen.Variant.Filled" AlertStyle="@AlertStyle" Size="Radzen.AlertSize.Medium" Shade="Radzen.Shade.Light" AllowClose=false>
@@ -83,16 +82,27 @@
         try
         {
             IsBusy = true;
-            var userLogged = await _authenticationService!.Authenticate(UserViewModel, "authentication/login");
+            var token = await _authenticationService!.Authenticate(UserViewModel, BaseSettingsApp?.BaseUrlApiWebHttp + "user/login");
+            if (token is null)
+            {
+                IsBusy = false;
+                MessageAlert = "Email ou mot de passe erroné !";
+                AlertStyle = Radzen.AlertStyle.Danger;
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+            var userLogged = Helper.DecryptAndDeserializeUserViewModel(token.Token);
             if (userLogged is null)
             {
                 IsBusy = false;
                 MessageAlert = "Email ou mot de passe erroné !";
                 AlertStyle = Radzen.AlertStyle.Danger;
+                await InvokeAsync(StateHasChanged);
+                return;
             }
             else
             {
-                await LocalStorage!.SetItemEncryptedAsync("userLogged", userLogged);
+                await LocalStorage!.SetItemEncryptedAsync("token", token);
                 var backOfficeAuthenticationStateProvider = (BackOfficeAuthenticationStateProvider)AuthenticationStateProvider!;
                 await backOfficeAuthenticationStateProvider.UpdateAuthenticationState(userLogged);
                 IsBusy = false;
@@ -102,10 +112,10 @@
         catch (Exception ex)
         {
             var log = LoggingMessaging.LoggingMessageError(
-                nameSpaceName: "TriviaRoyaleGame.Client.Business",
+                nameSpaceName: "TriviaRoyaleGame.Client.Pages",
                 statusCodeInt: (int)HttpStatusCode.InternalServerError,
                 statusCode: HttpStatusCode.InternalServerError.ToString(),
-                actionName: "Services.Class.GenericService - CreateAsync()",
+                actionName: "Login - OnSubmit()",
                 exception: ex
             );
             await HttpClient!.PostAsJsonAsync(BaseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
