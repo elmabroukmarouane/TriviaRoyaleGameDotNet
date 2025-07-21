@@ -4,6 +4,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using TriviaRoyaleGame.Client.Domain.Models;
+using System.Text.Json;
 
 namespace TriviaRoyaleGame.Client.Business.Helpers;
 public static class Helper
@@ -83,5 +85,13 @@ public static class Helper
             expires: DateTime.Now.AddYears(JwtAppSettings.JwtTokenValidite),
             signingCredentials: creds);
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public static UserViewModel? DecryptAndDeserializeUserViewModel(string? token)
+    {
+        if(token is null) return null;
+        var userLoggedString = DecryptToken(token?.ToString());
+        var userLogged = JsonSerializer.Deserialize<UserViewModel>(userLoggedString!);
+        return userLogged;
     }
 }

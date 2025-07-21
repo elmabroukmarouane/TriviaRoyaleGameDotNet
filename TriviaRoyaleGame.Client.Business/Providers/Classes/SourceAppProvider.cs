@@ -1,6 +1,6 @@
-﻿using TriviaRoyaleGame.Client.Business.Services.Interface;
+﻿using TriviaRoyaleGame.Client.Business.Providers.Interfaces;
 
-namespace TriviaRoyaleGame.Client.Business.Services.Class
+namespace TriviaRoyaleGame.Client.Business.Providers.Classes
 {
     public class SourceAppProvider(string sourceApp) : ISourceAppProvider
     {

@@ -1,7 +1,7 @@
 ﻿using TriviaRoyaleGame.Client.Domain.Models;
 using TriviaRoyaleGame.Client.Domain.Models.LambdaManagement.Models;
 
-namespace TriviaRoyaleGame.Client.Business.Services.Interface
+namespace TriviaRoyaleGame.Client.Business.Services.GenericService.Interface
 {
     public interface IGenericService<TEntityViewModel> where TEntityViewModel : Entity
     {
