@@ -1,27 +1,59 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
+using TriviaRoyaleGame.Client.Business.Extensions.Logging;
 using TriviaRoyaleGame.Client.Business.Helpers;
+using TriviaRoyaleGame.Client.Business.Providers.Interfaces;
 using TriviaRoyaleGame.Client.Business.Services.AuthenticationService.Interface;
 using TriviaRoyaleGame.Client.Domain.Models;
+using TriviaRoyaleGame.Client.Domain.Models.Responses;
+using TriviaRoyaleGame.Client.Domain.Models.Settings;
 
 namespace TriviaRoyaleGame.Client.Business.Services.AuthenticationService.Classe;
-public class AuthenticationService(HttpClient httpClient) : IAuthenticationService
+public class AuthenticationService(HttpClient httpClient, BaseSettingsApp? baseSettingsApp, ISourceAppProvider? SourceAppProvider) : IAuthenticationService
 {
     #region ATTRIBUTES
     protected readonly HttpClient _httpClient = httpClient ?? throw new ArgumentException(null, nameof(httpClient));
+    protected readonly BaseSettingsApp? _baseSettingsApp = baseSettingsApp ?? throw new ArgumentException(null, nameof(baseSettingsApp));
+    protected readonly ISourceAppProvider? _SourceAppProvider = SourceAppProvider ?? throw new ArgumentException(null, nameof(SourceAppProvider));
     //private readonly IRedisService _redisService;
     //private SessionState _sessionState;
     #endregion
 
     #region METHODS
-    public async Task<UserViewModel?> Authenticate(UserViewModel UserLogin, string uri)
+    public async Task<TokenResponse?> Authenticate(UserViewModel UserLogin, string uri)
     {
-        var UserResponseHttp = await _httpClient.PostAsJsonAsync(uri, UserLogin);
-        //var UserResponse = await UserResponseHttp.Content.ReadFromJsonAsync<UserViewModel>();
-        //UserResponse!.StatusCode = UserResponseHttp.StatusCode;
-        var token  = await UserResponseHttp.Content.ReadFromJsonAsync<object>();
-        if (token == null) return null;
-        var userLogged = Helper.DecryptAndDeserializeUserViewModel(token.ToString());
-        return userLogged;
+        try
+        {
+            var UserResponseHttp = await _httpClient.PostAsJsonAsync(uri, UserLogin);
+            TokenResponse? token = new();
+            if (UserResponseHttp.IsSuccessStatusCode)
+            {
+                token = await UserResponseHttp.Content.ReadFromJsonAsync<TokenResponse>();
+            }
+            else if (UserResponseHttp.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                token.Token = null;
+                token.StatusCode = HttpStatusCode.Unauthorized;
+            }
+            return token;
+        }
+        catch (Exception ex)
+        {
+            var log = LoggingMessaging.LoggingMessageError(
+                nameSpaceName: "TriviaRoyaleGame.Client.Business",
+                statusCodeInt: (int)HttpStatusCode.InternalServerError,
+                statusCode: HttpStatusCode.InternalServerError.ToString(),
+                actionName: "Services.Class.AuthenticationService - Authenticate()",
+                exception: ex
+            );
+            await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
+            {
+                Level = "Error",
+                Message = log,
+                Source = _SourceAppProvider?.GetSourceApp(),
+            });
+            throw new Exception(ex.Message, ex);
+        }
     }
 
     //public async Task<string> GetSessionId(string password, string fullName)
@@ -62,8 +94,28 @@ public class AuthenticationService(HttpClient httpClient) : IAuthenticationServi
 
     public async Task Logout(string uri, string token)
     {
-        SetTokenToHeader(token);
-        await _httpClient.GetAsync(uri);
+        try
+        {
+            SetTokenToHeader(token);
+            await _httpClient.GetAsync(uri);
+        }
+        catch (Exception ex)
+        {
+            var log = LoggingMessaging.LoggingMessageError(
+                nameSpaceName: "TriviaRoyaleGame.Client.Business",
+                statusCodeInt: (int)HttpStatusCode.InternalServerError,
+                statusCode: HttpStatusCode.InternalServerError.ToString(),
+                actionName: "Services.Class.AuthenticationService - Logout()",
+                exception: ex
+            );
+            await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
+            {
+                Level = "Error",
+                Message = log,
+                Source = _SourceAppProvider?.GetSourceApp(),
+            });
+            throw new Exception(ex.Message, ex);
+        }
     }
     #endregion
 

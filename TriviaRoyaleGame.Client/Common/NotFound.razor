@@ -1,0 +1,33 @@
+﻿@layout NotFoundLayout
+
+<div class="row">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+        <h1>404</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+        <h3>Oops! Page non trouvé!</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2 text-center">
+        <img src="assets/img/logo/NotFoundLogo.png" width="400" height="330" />
+    </div>
+</div>
+<br />
+<br />
+<div class="row">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+        <RadzenButton Click="GoHome" Text="Accueil" Icon="home" ButtonStyle="Radzen.ButtonStyle.Success" />
+    </div>
+</div>
+
+@code {
+    [Inject]
+    NavigationManager? NavigationManager { get; set; }
+    private void GoHome()
+    {
+        NavigationManager?.NavigateTo("/");
+    }
+}

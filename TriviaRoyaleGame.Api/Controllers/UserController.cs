@@ -406,29 +406,31 @@ namespace TriviaRoyaleGame.Api.Controllers
         #region AUTHENTICATION
         [HttpPost("Login")]
         //public async Task<IActionResult> Authenticate(string? email, string? password)
-        public async Task<IActionResult> Authenticate(UserViewModel userLogin)
+        public async Task<IActionResult?> Authenticate(UserViewModel userLogin)
         {
             try
             {
                 if (userLogin is null)
                 {
                     _logger.LoggingMessageWarning("TriviaRoyaleGame", (int)HttpStatusCode.InternalServerError, "USER IS NULL !", HttpContext.Request.Method, ControllerContext?.RouteData?.Values["controller"]?.ToString() ?? "", ControllerContext?.RouteData?.Values["action"]?.ToString() ?? "", " - Authenticate(UserViewModel _user)", _hostEnvironment.ContentRootPath);
-                    return StatusCode(500,
-                    new
-                    {
-                        Message = "User received is null !"
-                    });
+                    //return StatusCode(500,
+                    //new
+                    //{
+                    //    Message = "User received is null !"
+                    //});
+                    return null;
                 }
                 var email = userLogin.Email;
                 var password = userLogin.Password;
                 if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
                 {
                     _logger.LoggingMessageWarning("TriviaRoyaleGame", (int)HttpStatusCode.InternalServerError, "USER IS NULL !", HttpContext.Request.Method, ControllerContext?.RouteData?.Values["controller"]?.ToString() ?? "", ControllerContext?.RouteData?.Values["action"]?.ToString() ?? "", " - Authenticate(UserViewModel _user)", _hostEnvironment.ContentRootPath);
-                    return StatusCode(500,
-                    new
-                    {
-                        Message = "User received is null !"
-                    });
+                    //return StatusCode(500,
+                    //new
+                    //{
+                    //    Message = "User received is null !"
+                    //});
+                    return null;
                 }
                 var _user = new User()
                 {
@@ -453,11 +455,8 @@ namespace TriviaRoyaleGame.Api.Controllers
                 return Ok(new
                 {
                     token,
+                    StatusCode = (int)HttpStatusCode.OK,
                 });
-                //return Ok(new
-                //{
-                //    userViewModel
-                //});
             }
             catch (Exception ex)
             {
