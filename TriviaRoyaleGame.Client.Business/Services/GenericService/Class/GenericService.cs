@@ -1,5 +1,4 @@
-﻿using TriviaRoyaleGame.Client.Business.Services.Interface;
-using TriviaRoyaleGame.Client.Domain.Models;
+﻿using TriviaRoyaleGame.Client.Domain.Models;
 using TriviaRoyaleGame.Client.Domain.Models.LambdaManagement.Models;
 using System.Net.Http.Json;
 using System.Text;
@@ -7,8 +6,10 @@ using System.Text.Json;
 using TriviaRoyaleGame.Client.Domain.Models.Settings;
 using System.Net;
 using TriviaRoyaleGame.Client.Business.Extensions.Logging;
+using TriviaRoyaleGame.Client.Business.Services.GenericService.Interface;
+using TriviaRoyaleGame.Client.Business.Providers.Interfaces;
 
-namespace TriviaRoyaleGame.Client.Business.Services.Class
+namespace TriviaRoyaleGame.Client.Business.Services.GenericService.Class
 {
     public class GenericService<TEntityViewModel>(HttpClient httpClient, BaseSettingsApp? baseSettingsApp, ISourceAppProvider? SourceAppProvider) : IGenericService<TEntityViewModel> where TEntityViewModel : Entity
     {
@@ -61,7 +62,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                 SetTokenToHeader(token);
                 var EntitiesResponse = await _httpClient.GetAsync(uri);
                 var Entity = await EntitiesResponse.Content.ReadFromJsonAsync<TEntityViewModel>();
-                if (Entity is not null) Entity.StatusCode = EntitiesResponse?.StatusCode ?? System.Net.HttpStatusCode.InternalServerError;
+                if (Entity is not null) Entity.StatusCode = EntitiesResponse?.StatusCode ?? HttpStatusCode.InternalServerError;
                 return Entity;
             }
             catch (Exception ex)
@@ -127,7 +128,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                 SetTokenToHeader(token);
                 var response = await _httpClient.PostAsJsonAsync(uri, entity);
                 var entityResponse = await response.Content.ReadFromJsonAsync<TEntityViewModel>();
-                if (entityResponse is not null) entityResponse.StatusCode = response?.StatusCode ?? System.Net.HttpStatusCode.InternalServerError;
+                if (entityResponse is not null) entityResponse.StatusCode = response?.StatusCode ?? HttpStatusCode.InternalServerError;
                 return entityResponse;
             }
             catch (Exception ex)
@@ -193,7 +194,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                 SetTokenToHeader(token);
                 var response = await _httpClient.PutAsJsonAsync(uri, entity);
                 var entityResponse = await response.Content.ReadFromJsonAsync<TEntityViewModel>();
-                if (entityResponse is not null) entityResponse.StatusCode = response?.StatusCode ?? System.Net.HttpStatusCode.InternalServerError;
+                if (entityResponse is not null) entityResponse.StatusCode = response?.StatusCode ?? HttpStatusCode.InternalServerError;
                 return entityResponse;
             }
             catch (Exception ex)
@@ -264,7 +265,7 @@ namespace TriviaRoyaleGame.Client.Business.Services.Class
                     Content = new StringContent(entityJsonSerialize, Encoding.UTF8, "application/json")
                 });
                 var entityResponse = await response.Content.ReadFromJsonAsync<TEntityViewModel>();
-                if (entityResponse is not null) entityResponse.StatusCode = response?.StatusCode ?? System.Net.HttpStatusCode.InternalServerError;
+                if (entityResponse is not null) entityResponse.StatusCode = response?.StatusCode ?? HttpStatusCode.InternalServerError;
                 return entityResponse;
             }
             catch (Exception ex)

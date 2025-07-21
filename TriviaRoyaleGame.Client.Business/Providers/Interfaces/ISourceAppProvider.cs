@@ -1,4 +1,4 @@
-﻿namespace TriviaRoyaleGame.Client.Business.Services.Interface
+﻿namespace TriviaRoyaleGame.Client.Business.Providers.Interfaces
 {
     public interface ISourceAppProvider
     {

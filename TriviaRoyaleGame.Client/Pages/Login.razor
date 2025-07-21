@@ -1,0 +1,125 @@
+﻿@page "/login"
+@using BackOffice.Hybrid.Components.Authentication
+@layout LoginLayout
+
+<RadzenAlert Variant="Radzen.Variant.Filled" AlertStyle="@AlertStyle" Size="Radzen.AlertSize.Medium" Shade="Radzen.Shade.Light" AllowClose=false>
+    @MessageAlert
+</RadzenAlert>
+<RadzenTemplateForm TItem="UserViewModel" Data=@UserViewModel Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+    <div class="mb-3">
+        <RadzenText class="form-label" TextStyle="TextStyle.Subtitle2" TagName="TagName.Auto">Email</RadzenText>
+        <RadzenTextBox Name="Email" @bind-Value=UserViewModel.Email type="email" class="form-control" Placeholder="Entrer l'email" autofocus />
+        <RadzenRequiredValidator Component="Email" Text="Champs obligatoire" Popup="false" />
+        <RadzenEmailValidator Component="Email" Text="Renseigner un email valide" Popup="false" />
+    </div>
+    <div class="mb-3 form-password-toggle">
+        <div class="d-flex justify-content-between">
+            <RadzenText class="form-label" TextStyle="TextStyle.Subtitle2" TagName="TagName.Auto">Mot de passe</RadzenText>
+        </div>
+        <div class="input-group input-group-merge">
+            <RadzenTextBox Name="Password" @bind-Value=UserViewModel.Password type="@(ShowHidePassword ? "text" : "password")" class="form-control" Placeholder="Entrer le mot de passe'" aria-describedby="password" />
+            <span class="input-group-text cursor-pointer" @onclick="ShowHidePasswordMethode"><i class="bx bx-@(ShowHidePassword ? "show" : "hide")"></i></span>
+        </div>
+        <RadzenRequiredValidator Component="Password" Text="Champs obligatoire" Popup="false" />
+        <RadzenLengthValidator Component="Password" Min="6" Text="Le mot de passe doit avoir minimun 6 caractères" Popup="false" />
+        <RadzenLengthValidator Component="Password" Max="25" Text="Le mot de passe doit avoir maximun 25 caractères" Popup="false" />
+    </div>
+    <div class="mb-3">
+        <div class="form-check" style="width:auto">
+            <div class="row">
+                <div class="col-1 col-sm-1 col-md-1 col-lg-2 col-xl-2">
+                    <RadzenSwitch id="remember-me" class="form-check-input" Style="border: none !important;" />
+                </div>
+                <div class="col-11 col-sm-11 col-md-11 col-lg-10 col-xl-10 text-left">
+                    <RadzenText TagName="TagName.Auto" class="form-check-label" for="remember-me"> Se souvenir de moi </RadzenText>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <RadzenButton ButtonType="Radzen.ButtonType.Submit" IsBusy="IsBusy" Icon="login" Text="Login" class="d-grid w-100" ButtonStyle="Radzen.ButtonStyle.Success" />
+    </div>
+</RadzenTemplateForm>
+
+@code {
+
+    private bool ShowHidePassword { get; set; } = false;
+    private UserViewModel UserViewModel { get; set; } = new()
+    {
+        Email = string.Empty
+    };
+    [Inject]
+    private IAuthenticationService? _authenticationService { get; set; }
+    [Inject]
+    private ILocalStorageService? LocalStorage { get; set; }
+    [Inject]
+    NavigationManager? Navigation { get; set; }
+    [Inject]
+    AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
+    [Inject]
+    HttpClient? HttpClient { get; set; }
+    [Inject]
+    BaseSettingsApp? BaseSettingsApp { get; set; }
+    [Inject]
+    ISourceAppProvider? SourceAppProvider { get; set; }
+    private string MessageAlert { get; set; } = "Veuillez entrer votre email et mot de passe";
+    private Radzen.AlertStyle AlertStyle { get; set; } = Radzen.AlertStyle.Info;
+    private bool IsBusy { get; set; } = false;
+    protected override async Task OnInitializedAsync()
+    {
+        var backOfficeAuthenticationStateProvider = (BackOfficeAuthenticationStateProvider)AuthenticationStateProvider!;
+        var userLogged = await backOfficeAuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (userLogged != null && userLogged.User.Identity!.IsAuthenticated) Navigation!.NavigateTo("/");
+        return;
+    }
+
+    public void ShowHidePasswordMethode()
+    {
+        ShowHidePassword = !ShowHidePassword;
+    }
+
+    private async Task OnSubmit()
+    {
+        try
+        {
+            IsBusy = true;
+            var userLogged = await _authenticationService!.Authenticate(UserViewModel, "authentication/login");
+            if (userLogged is null)
+            {
+                IsBusy = false;
+                MessageAlert = "Email ou mot de passe erroné !";
+                AlertStyle = Radzen.AlertStyle.Danger;
+            }
+            else
+            {
+                await LocalStorage!.SetItemEncryptedAsync("userLogged", userLogged);
+                var backOfficeAuthenticationStateProvider = (BackOfficeAuthenticationStateProvider)AuthenticationStateProvider!;
+                await backOfficeAuthenticationStateProvider.UpdateAuthenticationState(userLogged);
+                IsBusy = false;
+                Navigation!.NavigateTo("/");
+            }
+        }
+        catch (Exception ex)
+        {
+            var log = LoggingMessaging.LoggingMessageError(
+                nameSpaceName: "TriviaRoyaleGame.Client.Business",
+                statusCodeInt: (int)HttpStatusCode.InternalServerError,
+                statusCode: HttpStatusCode.InternalServerError.ToString(),
+                actionName: "Services.Class.GenericService - CreateAsync()",
+                exception: ex
+            );
+            await HttpClient!.PostAsJsonAsync(BaseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
+            {
+                Level = "Error",
+                Message = log,
+                Source = SourceAppProvider?.GetSourceApp(),
+            });
+            throw new Exception(ex.Message, ex);
+        }
+    }
+
+    private async Task OnInvalidSubmit()
+    {
+        await Task.Run(() => { });
+    }
+}

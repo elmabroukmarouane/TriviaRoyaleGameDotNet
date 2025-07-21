@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using TriviaRoyaleGame.Client;
-using TriviaRoyaleGame.Client.Business.Services.Class;
-using TriviaRoyaleGame.Client.Business.Services.Interface;
+using TriviaRoyaleGame.Client.Business.Providers.Classes;
+using TriviaRoyaleGame.Client.Business.Providers.Interfaces;
 using TriviaRoyaleGame.Client.Domain.Models.Settings;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
