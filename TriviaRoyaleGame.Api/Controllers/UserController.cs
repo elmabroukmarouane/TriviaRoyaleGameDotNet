@@ -20,40 +20,26 @@ namespace TriviaRoyaleGame.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController(
+        IUserService userService,
+        IMapper mapper,
+        ILogger<UserController> logger,
+        IHostEnvironment hostEnvironment,
+        IConfiguration configuration,
+        IHubContext<RealTimeHub> realTimeHub,
+        IMemoryCache cache,
+        ISendMailService sendMailService) : ControllerBase
     {
         #region ATTRIBUTES
-        protected readonly IUserService _userService;
-        protected readonly IMapper _mapper;
-        protected readonly ILogger _logger;
-        protected readonly IHostEnvironment _hostEnvironment;
-        protected readonly IConfiguration _configuration;
-        protected readonly IHubContext<RealTimeHub> _realTimeHub;
-        protected readonly IMemoryCache _cache;
-        protected readonly ISendMailService _sendMailService;
-        #endregion
+        protected readonly IUserService _userService = userService ?? throw new ArgumentException(null, nameof(userService));
+        protected readonly IMapper _mapper = mapper ?? throw new ArgumentException(null, nameof(mapper));
+        protected readonly ILogger _logger = logger ?? throw new ArgumentException(null, nameof(logger));
+        protected readonly IHostEnvironment _hostEnvironment = hostEnvironment ?? throw new ArgumentException(null, nameof(hostEnvironment));
+        protected readonly IConfiguration _configuration = configuration ?? throw new ArgumentException(null, nameof(configuration));
+        protected readonly IHubContext<RealTimeHub> _realTimeHub = realTimeHub ?? throw new ArgumentException(null, nameof(realTimeHub));
+        protected readonly IMemoryCache _cache = cache ?? throw new ArgumentException(null, nameof(cache));
+        protected readonly ISendMailService _sendMailService = sendMailService ?? throw new ArgumentException(null, nameof(sendMailService));
 
-        #region CONSTRUCTOR
-        public UserController(
-            IUserService userService,
-            IMapper mapper,
-            ILogger<GenericController.GenericController<User, UserViewModel>> logger,
-            IHostEnvironment hostEnvironment,
-            IConfiguration configuration,
-            IHubContext<RealTimeHub> realTimeHub,
-            IMemoryCache cache,
-            ISendMailService sendMailService)
-        {
-            _userService = userService ?? throw new ArgumentException(null, nameof(userService));
-            _mapper = mapper ?? throw new ArgumentException(null, nameof(mapper));
-            _logger = logger ?? throw new ArgumentException(null, nameof(logger));
-            _hostEnvironment = hostEnvironment ?? throw new ArgumentException(null, nameof(hostEnvironment));
-            _configuration = configuration ?? throw new ArgumentException(null, nameof(configuration));
-            _realTimeHub = realTimeHub ?? throw new ArgumentException(null, nameof(realTimeHub));
-            _cache = cache ?? throw new ArgumentException(null, nameof(cache));
-            _sendMailService = sendMailService ?? throw new ArgumentException(null, nameof(sendMailService));
-
-        }
         #endregion
 
         #region READ

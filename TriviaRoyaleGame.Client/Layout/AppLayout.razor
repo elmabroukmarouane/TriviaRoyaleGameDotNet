@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase
-@inject AuthenticationStateProvider AuthProvider
+@* @inject AuthenticationStateProvider AuthProvider
 
 @if (_authState == null)
 {
@@ -37,4 +37,4 @@ else
     {
         _authState = await AuthProvider.GetAuthenticationStateAsync();
     }
-}
+} *@

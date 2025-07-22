@@ -10,6 +10,8 @@ using TriviaRoyaleGame.Client.Business.Providers.Classes;
 using TriviaRoyaleGame.Client.Business.Providers.Interfaces;
 using TriviaRoyaleGame.Client.Business.Services.AuthenticationService.Classe;
 using TriviaRoyaleGame.Client.Business.Services.AuthenticationService.Interface;
+using TriviaRoyaleGame.Client.Business.Services.CryptoService.Classe;
+using TriviaRoyaleGame.Client.Business.Services.CryptoService.Interface;
 using TriviaRoyaleGame.Client.Business.Services.GenericService.Class;
 using TriviaRoyaleGame.Client.Business.Services.GenericService.Interface;
 using TriviaRoyaleGame.Client.Domain.Models;
@@ -68,5 +70,6 @@ builder.Services.AddTransient<IGenericService<MemberViewModel>, GenericService<M
 builder.Services.AddTransient<IGenericService<QuestionViewModel>, GenericService<QuestionViewModel>>();
 builder.Services.AddTransient<IGenericService<UserViewModel>, GenericService<UserViewModel>>();
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
+builder.Services.AddTransient<ICryptoService, CryptoService>();
 
 await builder.Build().RunAsync();
