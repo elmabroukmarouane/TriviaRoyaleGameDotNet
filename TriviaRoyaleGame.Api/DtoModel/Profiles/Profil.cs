@@ -37,6 +37,10 @@ namespace TriviaRoyaleGame.Api.DtoModel.Profiles
             // ClientAppLog - QuestionViewModel
             CreateMap<ClientAppLog, ClientAppLogViewModel>()
                 .ReverseMap();
+
+            // CryptoPayload - CryptoPayloadViewModel
+            CreateMap<CryptoPayload, CryptoPayloadViewModel>()
+                .ReverseMap();
         }
     }
 }

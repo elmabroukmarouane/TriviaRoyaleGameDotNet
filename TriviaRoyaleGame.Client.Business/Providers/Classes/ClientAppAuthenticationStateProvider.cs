@@ -27,7 +27,7 @@ namespace TriviaRoyaleGame.Client.Business.Providers.Classes
         {
             try
             {
-                var token = await _localStorageService.GetItemDecryptedAsync<TokenResponse?>("token");
+                var token = await _localStorageService.GetItemDecryptedAsync<TokenResponse?>("token", Helper.PasswordEncryption);
                 if (token == null)
                 {
                     return await Task.FromResult(new AuthenticationState(Anonymous));
@@ -39,8 +39,7 @@ namespace TriviaRoyaleGame.Client.Business.Providers.Classes
                 }
                 var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
                 [
-                    new Claim(ClaimTypes.Email, userLogged.Email),
-                    new Claim(ClaimTypes.Role, userLogged.Role.ToString())
+                    new Claim("user", JsonSerializer.Serialize(userLogged))
                 ], "JwtAuth"));
                 return await Task.FromResult(new AuthenticationState(claimsPrincipal));
             }
@@ -72,8 +71,7 @@ namespace TriviaRoyaleGame.Client.Business.Providers.Classes
                 {
                     claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
                     [
-                        new Claim(ClaimTypes.Email, userLogged.Email),
-                        new Claim(ClaimTypes.Role, userLogged.Role.ToString())
+                        new Claim("user", JsonSerializer.Serialize(userLogged))
                     ], "JwtAuth"));
                     //var token = Helper.CreateToken(userLogged.Email, userLogged.Password, _jwtAppSettings);
                     //var tokenResponseString = JsonSerializer.Serialize(new TokenResponse()

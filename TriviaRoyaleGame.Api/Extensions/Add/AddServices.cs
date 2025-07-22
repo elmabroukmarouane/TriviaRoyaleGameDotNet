@@ -58,6 +58,8 @@ public static class AddServices
 
         self.AddTransient<IRedisService, RedisService>();
 
+        self.AddTransient<ICryptoService, CryptoService>();
+
         self.AddTransient<RealTimeHub>();
 
         self.AddSingleton<IRedisConnectionFactory>(new RedisConnectionFactory(configuration.GetConnectionString("RedisConnection")!));
