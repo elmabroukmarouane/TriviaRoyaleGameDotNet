@@ -1,5 +1,7 @@
 ﻿@page "/"
 @attribute [Authorize]
+@inject AuthenticationStateProvider? AuthenticationStateProvider
+@inject NavigationManager? Navigation
 
 <PageTitle>Home</PageTitle>
 
@@ -8,12 +10,6 @@
 Welcome to Trivia Royale Game.
 
 @code {
-
-    [Inject]
-    NavigationManager? Navigation { get; set; }
-    [Inject]
-    AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
         var isAuthenticated = await Helper.GetAuthentificationStatus(AuthenticationStateProvider);

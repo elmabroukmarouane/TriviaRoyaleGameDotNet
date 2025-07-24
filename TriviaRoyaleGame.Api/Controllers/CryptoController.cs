@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+//using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TriviaRoyaleGame.Api.DtoModel.Models;
@@ -9,7 +9,7 @@ using TriviaRoyaleGame.Infrastructure.Models.Classes;
 
 namespace TriviaRoyaleGame.Api.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CryptoController(

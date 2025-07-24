@@ -433,6 +433,7 @@ namespace TriviaRoyaleGame.Api.Controllers
                 userViewModel.MemberViewModel = new();
                 var token = _userService.CreateToken(
                     userViewModel,
+                    userViewModel.Role.ToString(),
                     _configuration.GetSection("Jwt").GetSection("Key").Value ?? "",
                     _configuration.GetSection("Jwt").GetSection("Issuer").Value ?? "",
                     _configuration.GetSection("Jwt").GetSection("Audience").Value ?? "",

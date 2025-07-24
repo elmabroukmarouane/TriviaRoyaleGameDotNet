@@ -112,12 +112,13 @@ namespace TriviaRoyaleGame.Business.Services.Classes
         #endregion
 
         #region TOKEN
-        public string? CreateToken(object user, string keyString, string issuerString, string audienceString, int expireTokenDays = 1)
+        public string? CreateToken(object user, string role, string keyString, string issuerString, string audienceString, int expireTokenDays = 1)
         {
             if (user != null && keyString != null && issuerString != null && audienceString != null)
             {
                 var claims = new[] {
-                    new Claim("user", JsonSerializer.Serialize(user))
+                    new Claim("user", JsonSerializer.Serialize(user)),
+                    new Claim(ClaimTypes.Role, role)
                 };
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
                 var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);

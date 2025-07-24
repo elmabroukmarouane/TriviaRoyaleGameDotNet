@@ -39,7 +39,7 @@ namespace TriviaRoyaleGame.Business.Services.Interfaces
         #endregion
 
         #region TOKEN
-        string? CreateToken(object user, string keyString, string issuerString, string audienceString, int expireTokenDays = 1);
+        string? CreateToken(object user, string role, string keyString, string issuerString, string audienceString, int expireTokenDays = 1);
         #endregion
     }
 }

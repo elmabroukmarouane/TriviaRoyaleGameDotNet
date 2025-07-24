@@ -4,6 +4,7 @@ using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MudBlazor.Services;
 using Radzen;
 using TriviaRoyaleGame.Client;
 using TriviaRoyaleGame.Client.Business.Providers.Classes;
@@ -24,6 +25,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredModal();
+builder.Services.AddMudServices();
 builder.Services.AddSweetAlert2(options =>
 {
     options.Theme = SweetAlertTheme.Dark;
@@ -41,7 +43,8 @@ try
         BaseTitleApp = string.Empty,
         BaseUrlApiAndroidHttp = string.Empty,
         BaseUrlApiWebHttp = string.Empty,
-        ChosenEnviroment = string.Empty
+        ChosenEnviroment = string.Empty,
+        OpenerString = string.Empty
     };
     builder.Services.AddSingleton(appSettingsBaseSettingsApp);
 
@@ -69,7 +72,10 @@ builder.Services.AddTransient<IGenericService<ClientAppLogViewModel>, GenericSer
 builder.Services.AddTransient<IGenericService<MemberViewModel>, GenericService<MemberViewModel>>();
 builder.Services.AddTransient<IGenericService<QuestionViewModel>, GenericService<QuestionViewModel>>();
 builder.Services.AddTransient<IGenericService<UserViewModel>, GenericService<UserViewModel>>();
+builder.Services.AddTransient<IGenericService<ScoreBoardViewModel>, GenericService<ScoreBoardViewModel>>();
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<ICryptoService, CryptoService>();
+builder.Services.AddScoped<DialogService>();
+builder.Services.AddScoped<TooltipService>();
 
 await builder.Build().RunAsync();

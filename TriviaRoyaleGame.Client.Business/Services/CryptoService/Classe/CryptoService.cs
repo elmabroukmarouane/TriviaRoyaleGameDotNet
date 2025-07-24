@@ -17,11 +17,11 @@ public class CryptoService(HttpClient httpClient, BaseSettingsApp? baseSettingsA
     #endregion
 
     #region METHODS
-    public async Task<string?> EncryptAsync(CryptoPayloadViewModel cryptoPayloadViewModel, string? uri, string? token)
+    public async Task<string?> EncryptAsync(CryptoPayloadViewModel cryptoPayloadViewModel, string? uri/*, string? token*/)
     {
         try
         {
-            SetTokenToHeader(token);
+            //SetTokenToHeader(token);
             var cryptoResponseHttp = await _httpClient.PostAsJsonAsync(uri, cryptoPayloadViewModel);
             var cryptoResponse = new CryptoResponse();
             if (cryptoResponseHttp.IsSuccessStatusCode)
@@ -49,44 +49,50 @@ public class CryptoService(HttpClient httpClient, BaseSettingsApp? baseSettingsA
         }
     }
 
-    //public async DecryptAsync(CryptoPayloadViewModel cryptoPayloadViewModel, string? uri, string? token)
-    //{
-    //    try
-    //    {
-    //        SetTokenToHeader(token);
-    //        await _httpClient.GetAsync(uri);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        var log = LoggingMessaging.LoggingMessageError(
-    //            nameSpaceName: "TriviaRoyaleGame.Client.Business",
-    //            statusCodeInt: (int)HttpStatusCode.InternalServerError,
-    //            statusCode: HttpStatusCode.InternalServerError.ToString(),
-    //            actionName: "Services.Class.AuthenticationService - Logout()",
-    //            exception: ex
-    //        );
-    //        await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
-    //        {
-    //            Level = "Error",
-    //            Message = log,
-    //            Source = _SourceAppProvider?.GetSourceApp(),
-    //        });
-    //        throw new Exception(ex.Message, ex);
-    //    }
-    //}
+    public async Task<string?> DecryptAsync(CryptoPayloadViewModel cryptoPayloadViewModel, string? uri/*, string? token*/)
+    {
+        try
+        {
+            //SetTokenToHeader(token);
+            var cryptoResponseHttp = await _httpClient.PostAsJsonAsync(uri, cryptoPayloadViewModel);
+            var cryptoResponse = new CryptoResponse();
+            if (cryptoResponseHttp.IsSuccessStatusCode)
+            {
+                cryptoResponse = await cryptoResponseHttp.Content.ReadFromJsonAsync<CryptoResponse>();
+            }
+            return cryptoResponse?.Response;
+        }
+        catch (Exception ex)
+        {
+            var log = LoggingMessaging.LoggingMessageError(
+                nameSpaceName: "TriviaRoyaleGame.Client.Business",
+                statusCodeInt: (int)HttpStatusCode.InternalServerError,
+                statusCode: HttpStatusCode.InternalServerError.ToString(),
+                actionName: "Services.Class.AuthenticationService - Logout()",
+                exception: ex
+            );
+            await _httpClient.PostAsJsonAsync(baseSettingsApp?.BaseUrlApiWebHttp + "Log", new ClientAppLogViewModel()
+            {
+                Level = "Error",
+                Message = log,
+                Source = _SourceAppProvider?.GetSourceApp(),
+            });
+            throw new Exception(ex.Message, ex);
+        }
+    }
     #endregion
 
     #region ADDTOKEN
-    private void SetTokenToHeader(string? token)
-    {
-        if (token != null)
-        {
-            if (!_httpClient.DefaultRequestHeaders.Contains("Authorization"))
-            {
-                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-            }
-        }
-    }
+    //private void SetTokenToHeader(string? token)
+    //{
+    //    if (token != null)
+    //    {
+    //        if (!_httpClient.DefaultRequestHeaders.Contains("Authorization"))
+    //        {
+    //            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+    //        }
+    //    }
+    //}
     #endregion
 }
 

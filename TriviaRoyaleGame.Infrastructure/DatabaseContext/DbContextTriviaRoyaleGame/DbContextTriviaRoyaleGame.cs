@@ -10,6 +10,7 @@ namespace TriviaRoyaleGame.Infrastructure.DatabaseContext.DbContextTriviaRoyaleG
         public DbSet<Question>? Questions { get; set; }
         public DbSet<User>? Users { get; set; }
         public DbSet<ClientAppLog>? ClientAppLogs { get; set; }
+        public DbSet<ScoreBoard>? ScoreBoards { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

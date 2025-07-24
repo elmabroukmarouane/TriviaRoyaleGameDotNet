@@ -1,6 +1,6 @@
 [
   {
-    "Name": "Nouveau profil",
+    "Name": "API+FRONTEND",
     "Projects": [
       {
         "Path": "TriviaRoyaleGame.Client\\TriviaRoyaleGame.Client.csproj",

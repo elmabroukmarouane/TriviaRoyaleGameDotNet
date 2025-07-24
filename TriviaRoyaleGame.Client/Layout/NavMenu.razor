@@ -38,6 +38,18 @@
         <NavLink href="quiz" class="block px-4 py-2 rounded hover:bg-indigo-700" activeClass="bg-indigo-700 font-semibold">
             <span class="mr-2">🧠</span> Trivia Quiz
         </NavLink>
+
+        <NavLink href="score-board" class="block px-4 py-2 rounded hover:bg-indigo-700" activeClass="bg-indigo-700 font-semibold">
+            <span class="mr-2">🧠</span> Score Board
+        </NavLink>
+
+        <AuthorizeView Roles="SuperAdmin">
+            <Authorized>
+                <NavLink href="client-log-app" class="block px-4 py-2 rounded hover:bg-indigo-700" activeClass="bg-indigo-700 font-semibold">
+                    <span class="mr-2">🧠</span> Log App
+                </NavLink>
+            </Authorized>
+        </AuthorizeView>
     </nav>
 </div>
 
