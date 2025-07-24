@@ -1,8 +1,12 @@
 ﻿@page "/quiz"
 @attribute [Authorize]
 @inject IGenericService<QuestionViewModel>? GenericService
+@inject IGenericService<ScoreBoardViewModel>? GenericScoreService
 @inject BaseSettingsApp? BaseSettingsApp
 @inject ILocalStorageService? LocalStorageService
+@inject NavigationManager? Navigation
+@inject AuthenticationStateProvider? AuthenticationStateProvider
+@inject ICryptoService? CryptoService
 
 <PageTitle>Trivia Quiz</PageTitle>
 
@@ -14,7 +18,7 @@
         <!-- 🔵 Progress Bar -->
         <div class="w-full bg-gray-200 rounded-full h-3 mb-6 overflow-hidden">
             <div class="bg-indigo-500 h-3 rounded-full transition-all duration-300 ease-out"
-                 style="width:@($"{(currentQuestionIndex) * 100 / Questions?.Count}%")">
+                 style="width:@($"{(currentQuestionIndex + 1) * 100 / ShuffledQuestions?.Count}%")">
             </div>
         </div>
 
@@ -118,30 +122,8 @@
 
 
 @code {
-    // List<QuestionViewModel> Questions = [
-    //     new() {
-    //         Text = "Capital of France ?",
-    //         Choices = [ "London", "Paris", "Berlin", "Rome" ],
-    //         CorrectChoiceIndex = 1
-    //     },
-    //     new() {
-    //         Text = "2 + 2 = ?",
-    //         Choices = [ "3", "4", "5", "6" ],
-    //         CorrectChoiceIndex = 1
-    //     },
-    //     new() {
-    //         Text = "Blazor is a ___ framework?",
-    //         Choices = [ "Python", "C#", "Java", "PHP" ],
-    //         CorrectChoiceIndex = 1
-    //     }
-    // ];
-
-    [Inject]
-    NavigationManager? Navigation { get; set; }
-    [Inject]
-    AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
-
     IList<QuestionViewModel>? Questions;
+    IList<QuestionViewModel>? ShuffledQuestions = [];
 
     int score = 0;
     int currentQuestionIndex = 0;
@@ -152,6 +134,7 @@
     string CorrectAnswer = string.Empty;
     TokenResponse? Token;
     string? Uri = string.Empty;
+    UserViewModel? UserLogged;
 
     int remainingTime = 10;
     CancellationTokenSource? cts;
@@ -161,20 +144,28 @@
         var isAuthenticated = await Helper.GetAuthentificationStatus(AuthenticationStateProvider);
         if (!isAuthenticated) Navigation!.NavigateTo("/login", true);
         Uri = BaseSettingsApp?.BaseUrlApiWebHttp + "Question";
-        Token = await LocalStorageService!.GetItemDecryptedAsync<TokenResponse>("token", Helper.PasswordEncryption);
+        Token = await LocalStorageService!.GetItemDecryptedAsync<TokenResponse>("token", BaseSettingsApp?.OpenerString, BaseSettingsApp?.BaseUrlApiWebHttp + "crypto/decrypt"/*, token.Token*/, CryptoService);
+        UserLogged = Helper.DecryptAndDeserializeUserViewModel(Token?.Token);
         if(Token is not null) Questions = await GenericService!.GetEntitiesAsync(Uri!, Token?.Token);
+        ShuffleQuestions();
         await LoadQuestion();
     }
 
     async Task LoadQuestion()
     {
-
-        currentQuestion = Questions is not null ? Questions[currentQuestionIndex] : null;
+        currentQuestion = Questions is not null ? ShuffledQuestions?[currentQuestionIndex] : null;
         answerGiven = false;
         isCorrect = false;
         remainingTime = 10;
         cts = new CancellationTokenSource();
         await StartTimer(cts.Token);
+    }
+
+    void ShuffleQuestions()
+    {
+        var rng = new Random();
+        ShuffledQuestions = Questions?.OrderBy(_ => rng.Next()).ToList();
+        currentQuestionIndex = 0;
     }
 
     async Task StartTimer(CancellationToken token)
@@ -218,7 +209,18 @@
         }
         else
         {
-            gameOver = true;
+            if (currentQuestionIndex >= ShuffledQuestions?.Count)
+            {
+                if (Token is not null && UserLogged is not null)
+                {
+                    await GenericScoreService!.CreateAsync(Uri!, Token?.Token, new ScoreBoardViewModel
+                    {
+                        UserId = UserLogged.Id,
+                        Score = score
+                    });
+                }
+                gameOver = true;
+            }
         }
     }
 
@@ -230,6 +232,7 @@
         answerGiven = false;
         currentQuestion = Questions is not null ? Questions[currentQuestionIndex] : null;
         CorrectAnswer = string.Empty;
+        ShuffleQuestions();
         await LoadQuestion();
         await InvokeAsync(StateHasChanged);
     }

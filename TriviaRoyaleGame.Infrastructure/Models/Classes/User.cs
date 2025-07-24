@@ -7,6 +7,7 @@ public class User : Entity
     public bool IsOnLine { get; set; }
     public Role Role { get; set; }
     public virtual Member? Member { get; set; }
+    public virtual ICollection<ScoreBoard>? ScoreBoards { get; set; }
     public override bool Equals(object? obj)
     {
         if (obj == null || GetType() != obj.GetType())

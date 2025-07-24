@@ -17,7 +17,7 @@ namespace TriviaRoyaleGame.Api.DtoModel.Profiles
                     opt.MapFrom(src => src.Users);
                 })
                 .ReverseMap()
-                .ForMember(dest => dest.Users, opt => opt.Ignore()); ;
+                .ForMember(dest => dest.Users, opt => opt.Ignore());
 
             // User -> UserViewModel
             CreateMap<User, UserViewModel>()
@@ -41,6 +41,17 @@ namespace TriviaRoyaleGame.Api.DtoModel.Profiles
             // CryptoPayload - CryptoPayloadViewModel
             CreateMap<CryptoPayload, CryptoPayloadViewModel>()
                 .ReverseMap();
+
+            // ScoreBoard -> ScoreBoardViewModel
+            CreateMap<ScoreBoard, ScoreBoardViewModel>()
+                .ForMember(dest => dest.UserViewModel, opt => opt.Ignore())
+                .ForMember(dest => dest.UserViewModel, opt =>
+                {
+                    opt.PreCondition(src => src.User != null);
+                    opt.MapFrom(src => src.User);
+                })
+                .ReverseMap()
+                .ForMember(dest => dest.User, opt => opt.Ignore()); // Avoid loop
         }
     }
 }

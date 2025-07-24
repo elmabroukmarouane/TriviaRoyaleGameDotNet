@@ -10,6 +10,7 @@
         public bool IsOnLine { get; set; }
         public Role Role { get; set; }
         public MemberViewModel? MemberViewModel { get; set; }
+        public ICollection<ScoreBoardViewModel>? ScoreBoardViewModels { get; set; }
         public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType())

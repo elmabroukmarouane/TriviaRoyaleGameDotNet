@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TriviaRoyaleGame.Infrastructure.DatabaseContext.DbContextTriviaRoyaleGame;
 
@@ -10,9 +11,11 @@ using TriviaRoyaleGame.Infrastructure.DatabaseContext.DbContextTriviaRoyaleGame;
 namespace TriviaRoyaleGame.Infrastructure.Migrations
 {
     [DbContext(typeof(DbContextTriviaRoyaleGame))]
-    partial class DbContextTriviaRoyaleGameModelSnapshot : ModelSnapshot
+    [Migration("20250724173554_Migration3")]
+    partial class Migration3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -193,6 +196,9 @@ namespace TriviaRoyaleGame.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Score")
                         .HasColumnType("INTEGER");
 
@@ -202,12 +208,9 @@ namespace TriviaRoyaleGame.Infrastructure.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("PlayerId");
 
                     b.ToTable("ScoreBoards");
                 });
@@ -312,13 +315,13 @@ namespace TriviaRoyaleGame.Infrastructure.Migrations
 
             modelBuilder.Entity("TriviaRoyaleGame.Infrastructure.Models.Classes.ScoreBoard", b =>
                 {
-                    b.HasOne("TriviaRoyaleGame.Infrastructure.Models.Classes.User", "User")
+                    b.HasOne("TriviaRoyaleGame.Infrastructure.Models.Classes.User", "Player")
                         .WithMany("ScoreBoards")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Player");
                 });
 
             modelBuilder.Entity("TriviaRoyaleGame.Infrastructure.Models.Classes.User", b =>

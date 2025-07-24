@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using TriviaRoyaleGame.Client.Business.Extensions.Logging;
-using TriviaRoyaleGame.Client.Business.Helpers;
 using TriviaRoyaleGame.Client.Business.Providers.Interfaces;
 using TriviaRoyaleGame.Client.Business.Services.AuthenticationService.Interface;
 using TriviaRoyaleGame.Client.Domain.Models;
@@ -15,8 +14,6 @@ public class AuthenticationService(HttpClient httpClient, BaseSettingsApp? baseS
     protected readonly HttpClient _httpClient = httpClient ?? throw new ArgumentException(null, nameof(httpClient));
     protected readonly BaseSettingsApp? _baseSettingsApp = baseSettingsApp ?? throw new ArgumentException(null, nameof(baseSettingsApp));
     protected readonly ISourceAppProvider? _SourceAppProvider = SourceAppProvider ?? throw new ArgumentException(null, nameof(SourceAppProvider));
-    //private readonly IRedisService _redisService;
-    //private SessionState _sessionState;
     #endregion
 
     #region METHODS
@@ -55,43 +52,6 @@ public class AuthenticationService(HttpClient httpClient, BaseSettingsApp? baseS
             throw new Exception(ex.Message, ex);
         }
     }
-
-    //public async Task<string> GetSessionId(string password, string fullName)
-    //{
-    //    var sessionIdByte = await Helper.EncryptAsync(password, fullName);
-    //    return sessionIdByte;
-    //}
-
-    //public async Task<string> GetReverseSessionId(string sessionId, string fullName)
-    //{
-    //    var reverseSessionId = await Helper.DecryptAsync(sessionId, fullName);
-    //    return reverseSessionId;
-    //}
-
-    //public async Task<UserLogged> GetSession(string uri, string userSessionId)
-    //{
-    //    var userSessionActual = _sessionState.Users.Where(u => u.UserSessionId == userSessionId).FirstOrDefault();
-    //    if(userSessionActual != null)
-    //    {
-    //        return userSessionActual;
-    //    }
-    //    else
-    //    {
-    //        var response = await _httpClient.GetAsync(uri + userSessionActual);
-    //        var userLogged = await response.Content.ReadFromJsonAsync<UserLogged>();
-    //        if(userLogged.UserId != 0)
-    //        {
-    //            var userSessionToDelete = _sessionState.Users.Where(u => u.UserSessionId == userLogged.UserSessionId).FirstOrDefault();
-    //            if (userSessionToDelete is not null)
-    //            {
-    //                _sessionState.Users.Remove(userSessionToDelete);
-    //            }
-    //            _sessionState.Users.Add(userLogged);
-    //        }
-    //        return userLogged;
-    //    }
-    //}
-
     public async Task Logout(string uri, string token)
     {
         try

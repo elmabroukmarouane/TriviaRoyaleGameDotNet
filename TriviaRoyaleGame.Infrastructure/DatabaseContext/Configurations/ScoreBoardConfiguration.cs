@@ -5,19 +5,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace TriviaRoyaleGame.Infrastructure.DatabaseContext.Configurations
 {
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+    public class ScoreBoardConfiguration : IEntityTypeConfiguration<ScoreBoard>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<ScoreBoard> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Role)
-                   .HasConversion<int>();
-            builder.HasOne(x => x.Member)
-                   .WithMany(x => x.Users)
-                   .HasForeignKey(x => x.MemberId)
+            builder.HasOne(x => x.User)
+                   .WithMany(x => x.ScoreBoards)
+                   .HasForeignKey(x => x.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
-            builder.HasIndex(x => x.Email)
-                   .IsUnique();
             builder.Seed();
         }
     }

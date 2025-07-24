@@ -1,4 +1,11 @@
 ﻿@inherits LayoutComponentBase
+@inject BaseSettingsApp? BaseSettingsApp
+@inject ILocalStorageService? LocalStorageService
+@inject NavigationManager? Navigation
+@inject ICryptoService? CryptoService
+@inject AuthenticationStateProvider? AuthenticationStateProvider
+@inject IAuthenticationService? AuthenticationService
+@inject IJSRuntime JSRuntime
 
 <div class="flex min-h-screen bg-gray-50">
     <!-- Sidebar -->
@@ -9,12 +16,14 @@
     <!-- Main content area -->
     <div class="flex-1 flex flex-col">
         <!-- Top bar -->
-        <header class="bg-white shadow px-6 py-4 flex justify-between items-center">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank"
-               class="text-indigo-600 hover:text-indigo-800 font-semibold">
-                About
+        <header class="bg-white shadow px-6 py-4 flex items-center text-right">
+            <a href="javascript:void(0)"
+               class="text-indigo-600 hover:text-indigo-800 font-semibold"
+               @onclick="Logout">
+                Logout
             </a>
         </header>
+
 
         <!-- Content -->
         <main class="flex-1 overflow-auto p-6">
@@ -22,3 +31,45 @@
         </main>
     </div>
 </div>
+
+<RadzenComponents />
+
+@* Required *@
+<MudThemeProvider />
+<MudPopoverProvider />
+
+@* Needed for dialogs *@
+<MudDialogProvider />
+
+@* Needed for snackbars *@
+<MudSnackbarProvider />
+
+@* Scroll to TOP *@
+<MudScrollToTop>
+    <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.ArrowUpward" />
+</MudScrollToTop>
+
+@code {
+    TokenResponse? Token;
+    string? Uri = string.Empty;
+    UserViewModel? UserLogged;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Token = await LocalStorageService!.GetItemDecryptedAsync<TokenResponse>("token", BaseSettingsApp?.OpenerString, BaseSettingsApp?.BaseUrlApiWebHttp + "crypto/decrypt", CryptoService);
+        UserLogged = Helper.DecryptAndDeserializeUserViewModel(Token?.Token);
+        Uri = BaseSettingsApp?.BaseUrlApiWebHttp + $"User/Logout?id={UserLogged?.Id}";
+    }
+
+    async Task Logout()
+    {
+        if (!await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure to logout ?"))
+            return;
+        UserLogged = null;
+        var backOfficeAuthenticationStateProvider = (ClientAppAuthenticationStateProvider)AuthenticationStateProvider!;
+        await backOfficeAuthenticationStateProvider.UpdateAuthenticationState(UserLogged);
+        if (Token is null || string.IsNullOrEmpty(Uri) || string.IsNullOrEmpty(Token.Token)) Navigation!.NavigateTo("/login"); ;
+        await AuthenticationService!.Logout(Uri!, Token?.Token!);
+        Navigation!.NavigateTo("/login");
+    }
+}

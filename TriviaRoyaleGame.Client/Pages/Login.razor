@@ -1,5 +1,14 @@
 ﻿@page "/login"
 @layout LoginLayout
+@inject IGenericService<QuestionViewModel>? GenericService
+@inject BaseSettingsApp? BaseSettingsApp
+@inject ILocalStorageService? LocalStorageService
+@inject NavigationManager? Navigation
+@inject AuthenticationStateProvider? AuthenticationStateProvider
+@inject ICryptoService? CryptoService
+@inject IAuthenticationService? AuthenticationService
+@inject HttpClient? HttpClient
+@inject ISourceAppProvider? SourceAppProvider
 
 <PageTitle>Login - Trivia Quiz</PageTitle>
 
@@ -53,22 +62,6 @@
     {
         Email = string.Empty
     };
-    [Inject]
-    private IAuthenticationService? AuthenticationService { get; set; }
-    [Inject]
-    private ICryptoService? CryptoService { get; set; }
-    [Inject]
-    private ILocalStorageService? LocalStorage { get; set; }
-    [Inject]
-    NavigationManager? Navigation { get; set; }
-    [Inject]
-    AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
-    [Inject]
-    HttpClient? HttpClient { get; set; }
-    [Inject]
-    BaseSettingsApp? BaseSettingsApp { get; set; }
-    [Inject]
-    ISourceAppProvider? SourceAppProvider { get; set; }
     private string MessageAlert { get; set; } = "Veuillez entrer votre email et mot de passe";
     private Radzen.AlertStyle AlertStyle { get; set; } = Radzen.AlertStyle.Info;
     private bool IsBusy { get; set; } = false;
@@ -110,7 +103,7 @@
             else
             {
                 var tokenString = JsonSerializer.Serialize(token);
-                await LocalStorage!.SetItemEncryptedAsync("token", tokenString, Helper.PasswordEncryption, BaseSettingsApp?.BaseUrlApiWebHttp + "crypto/encrypt", token.Token, CryptoService);
+                await LocalStorageService!.SetItemEncryptedAsync("token", tokenString, BaseSettingsApp?.OpenerString, BaseSettingsApp?.BaseUrlApiWebHttp + "crypto/encrypt"/*, token.Token*/, CryptoService);
                 var backOfficeAuthenticationStateProvider = (ClientAppAuthenticationStateProvider)AuthenticationStateProvider!;
                 await backOfficeAuthenticationStateProvider.UpdateAuthenticationState(userLogged);
                 IsBusy = false;

@@ -8,26 +8,28 @@ using TriviaRoyaleGame.Client.Business.Extensions.LocalStorage;
 using TriviaRoyaleGame.Client.Business.Extensions.Logging;
 using TriviaRoyaleGame.Client.Business.Helpers;
 using TriviaRoyaleGame.Client.Business.Providers.Interfaces;
+using TriviaRoyaleGame.Client.Business.Services.CryptoService.Interface;
 using TriviaRoyaleGame.Client.Domain.Models;
 using TriviaRoyaleGame.Client.Domain.Models.Responses;
 using TriviaRoyaleGame.Client.Domain.Models.Settings;
 
 namespace TriviaRoyaleGame.Client.Business.Providers.Classes
 {
-    public class ClientAppAuthenticationStateProvider(HttpClient httpClient, BaseSettingsApp? baseSettingsApp, JwtAppSettings? jwtAppSettings, ISourceAppProvider? SourceAppProvider, ILocalStorageService? localStorageService) : AuthenticationStateProvider
+    public class ClientAppAuthenticationStateProvider(HttpClient httpClient, BaseSettingsApp? baseSettingsApp, JwtAppSettings? jwtAppSettings, ISourceAppProvider? SourceAppProvider, ILocalStorageService? localStorageService, ICryptoService cryptoService) : AuthenticationStateProvider
     {
         protected readonly HttpClient _httpClient = httpClient ?? throw new ArgumentException(null, nameof(httpClient));
         protected readonly BaseSettingsApp? _baseSettingsApp = baseSettingsApp ?? throw new ArgumentException(null, nameof(baseSettingsApp));
         protected readonly JwtAppSettings? _jwtAppSettings = jwtAppSettings ?? throw new ArgumentException(null, nameof(jwtAppSettings));
         protected readonly ISourceAppProvider? _SourceAppProvider = SourceAppProvider ?? throw new ArgumentException(null, nameof(SourceAppProvider));
         private readonly ILocalStorageService _localStorageService = localStorageService ?? throw new ArgumentNullException(nameof(localStorageService));
+        private readonly ICryptoService _cryptoService = cryptoService ?? throw new ArgumentNullException(nameof(cryptoService));
         private ClaimsPrincipal Anonymous { get; set; } = new ClaimsPrincipal(new ClaimsIdentity());
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             try
             {
-                var token = await _localStorageService.GetItemDecryptedAsync<TokenResponse?>("token", Helper.PasswordEncryption);
+                var token = await _localStorageService.GetItemDecryptedAsync<TokenResponse?>("token", _baseSettingsApp?.OpenerString, _baseSettingsApp?.BaseUrlApiWebHttp + "crypto/decrypt"/*, token.Token*/, _cryptoService);
                 if (token == null)
                 {
                     return await Task.FromResult(new AuthenticationState(Anonymous));
@@ -73,18 +75,11 @@ namespace TriviaRoyaleGame.Client.Business.Providers.Classes
                     [
                         new Claim("user", JsonSerializer.Serialize(userLogged))
                     ], "JwtAuth"));
-                    //var token = Helper.CreateToken(userLogged.Email, userLogged.Password, _jwtAppSettings);
-                    //var tokenResponseString = JsonSerializer.Serialize(new TokenResponse()
-                    //{
-                    //    StatusCode = HttpStatusCode.OK,
-                    //    Token = token
-                    //});
-                    //await _localStorageService.SetItemEncryptedAsync("token", tokenResponseString);
                 }
                 else
                 {
                     claimsPrincipal = Anonymous;
-                    //await _localStorageService.RemoveItemAsync("token");
+                    await _localStorageService.RemoveItemAsync("token");
                 }
                 NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
             }
