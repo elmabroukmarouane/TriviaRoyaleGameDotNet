@@ -41,7 +41,8 @@ namespace TriviaRoyaleGame.Client.Business.Providers.Classes
                 }
                 var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
                 [
-                    new Claim("user", JsonSerializer.Serialize(userLogged))
+                    new Claim("user", JsonSerializer.Serialize(userLogged)),
+                    new Claim(ClaimTypes.Role, Helper.GetRoleConnectedUser(token.Token) ?? string.Empty)
                 ], "JwtAuth"));
                 return await Task.FromResult(new AuthenticationState(claimsPrincipal));
             }
@@ -64,17 +65,21 @@ namespace TriviaRoyaleGame.Client.Business.Providers.Classes
             }
         }
 
-        public async Task UpdateAuthenticationState(UserViewModel? userLogged)
+        public async Task UpdateAuthenticationState(UserViewModel? userLogged, string? token = null)
         {
             try
             {
                 ClaimsPrincipal claimsPrincipal;
                 if (userLogged != null)
                 {
-                    claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
-                    [
+                    IList<Claim> claims = [
                         new Claim("user", JsonSerializer.Serialize(userLogged))
-                    ], "JwtAuth"));
+                    ];
+                    if (token is not null)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, Helper.GetRoleConnectedUser(token) ?? string.Empty));
+                    }
+                    claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, "JwtAuth"));
                 }
                 else
                 {

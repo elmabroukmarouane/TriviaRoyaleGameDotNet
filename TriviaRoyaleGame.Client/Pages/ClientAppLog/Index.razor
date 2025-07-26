@@ -1,5 +1,5 @@
 ﻿@page "/client-log-app"
-@attribute [Authorize]
+@attribute [Authorize(Roles = "SuperAdmin")]
 @using System.Text.Json
 @inject IJSRuntime? JSRuntime
 @inject BaseSettingsApp? BaseSettingsApp
@@ -16,7 +16,7 @@
 @implements IComponent
 @implements IDisposable
 
-<PageTitle>Score Board - Trivia Quiz</PageTitle>
+<PageTitle>Logs - Trivia Quiz</PageTitle>
 
 <style>
     .label-bold-summary {
@@ -25,18 +25,18 @@
 </style>
 
 <div class="container-fluid px-4">
-    <TitleContent Title="Score Board" />
+    <TitleContent Title="Logs" />
     <DescriptionCardContent>
-        This is the Score Board of the Trivia Quiz
+        This is the Logs of the Trivia Quiz
     </DescriptionCardContent>
     <div class="card mb-4">
         <TableHeader>
-            <i class="fas fa-table me-1"></i> Score Board
+            <i class="fas fa-table me-1"></i> Logs
         </TableHeader>
         <RadzenFieldset @ref="RadzenFieldsetDataGrid" AllowCollapse="true" class="mb-2 ms-2 me-2">
             <HeaderTemplate>
                 <span class="d-inline-flex align-items-center align-middle">
-                    <RadzenIcon Icon="category" class="me-1" /><b>Score Board</b>
+                    <RadzenIcon Icon="category" class="me-1" /><b>Logs</b>
                 </span>
             </HeaderTemplate>
             <ChildContent>
@@ -55,25 +55,17 @@
                         <HeaderContent>
                             <MudTh><MudTableSortLabel SortBy="new Func<ClientAppLogViewModel, string>(x => x?.Id!.ToString()!)">ID</MudTableSortLabel></MudTh>
                             <MudTh><MudTableSortLabel SortBy="new Func<ClientAppLogViewModel, string>(x => x?.Level!)">Level</MudTableSortLabel></MudTh>
-                            <MudTh><MudTableSortLabel SortBy="new Func<ClientAppLogViewModel, string>(x => x?.Message?.ToString()!)">Message</MudTableSortLabel></MudTh>
-                            <MudTh><MudTableSortLabel SortBy="new Func<ClientAppLogViewModel, string>(x => x?.Source?.ToString()!)">Source</MudTableSortLabel></MudTh>
-                            <MudTh><MudTableSortLabel SortBy="new Func<ClientAppLogViewModel, string>(x => x?.CreatedBy!)">Created By</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<ClientAppLogViewModel, string>(x => x?.Source!)">Source</MudTableSortLabel></MudTh>
                             <MudTh><MudTableSortLabel SortBy="new Func<ClientAppLogViewModel, string>(x => x?.CreateDate!.ToString()!)">Created Date</MudTableSortLabel></MudTh>
-                            <MudTh><MudTableSortLabel SortBy="new Func<ClientAppLogViewModel, string>(x => x?.UpdatedBy!)">Updated By</MudTableSortLabel></MudTh>
-                            <MudTh><MudTableSortLabel SortBy="new Func<ClientAppLogViewModel, string>(x => x?.UpdateDate!.ToString()!)">Updated Date</MudTableSortLabel></MudTh>
                             <MudTh>Actions</MudTh>
                         </HeaderContent>
                         <RowTemplate>
                             <MudTd DataLabel="ID">@context.Id</MudTd>
                             <MudTd DataLabel="Level">@context.Level</MudTd>
-                            <MudTd DataLabel="Message">@context.Message</MudTd>
                             <MudTd DataLabel="Source">@context.Source</MudTd>
-                            <MudTd DataLabel="CreatedBy">@context.CreatedBy</MudTd>
                             <MudTd DataLabel="CreateDate">@context.CreateDate.ToString()</MudTd>
-                            <MudTd DataLabel="UpdatedBy">@context.UpdatedBy</MudTd>
-                            <MudTd DataLabel="UpdateDate">@context.UpdateDate.ToString()</MudTd>
                             <MudTd>
-                                <RadzenButton Icon="monitor" ButtonStyle="ButtonStyle.Primary" Variant="Radzen.Variant.Filled" Size="ButtonSize.Medium" @onclick:stopPropagation="true" MouseEnter="@(args => ShowTooltip(args, CreateTooltipOptions(), "Update"))" Click="@(e => ShowDialogAsync("Update", context, true, "Update"))" />
+                                <RadzenButton Icon="monitor" ButtonStyle="ButtonStyle.Primary" Variant="Radzen.Variant.Filled" Size="ButtonSize.Medium" @onclick:stopPropagation="true" MouseEnter="@(args => ShowTooltip(args, CreateTooltipOptions(), "Show"))" Click="@(e => ShowDialogAsync("Error", context, true, "Close"))" />
                             </MudTd>
                         </RowTemplate>
                         <PagerContent>
@@ -84,7 +76,7 @@
             </ChildContent>
             <SummaryTemplate>
                 <RadzenCard class="mb-2 ms-2 me-2">
-                    <label class="label-bold-summary">@Count @(Count > 1 ? "Scores" : "Score")</label>
+                    <label class="label-bold-summary">@Count @(Count > 1 ? "Logs" : "Log")</label>
                 </RadzenCard>
             </SummaryTemplate>
         </RadzenFieldset>
@@ -115,13 +107,6 @@
         Token = await LocalStorageService!.GetItemDecryptedAsync<TokenResponse>("token", BaseSettingsApp?.OpenerString, BaseSettingsApp?.BaseUrlApiWebHttp + "crypto/decrypt"/*, token.Token*/, CryptoService);
         UserLogged = Helper.DecryptAndDeserializeUserViewModel(Token?.Token);
         await LoadData();
-    }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime!.InvokeVoidAsync("initAdminTemplate");
-        }
     }
 
     private async Task LoadData()
@@ -161,73 +146,38 @@
         bool isUpdate = false,
         string titleOkButton = "Add")
     {
-        // try
-        // {
-        //     var parameters = new DialogParameters<SquadAddUpdate>()
-        //         {
-        //             {
-        //                 x => x.ClientAppLogViewModel, ClientAppLogViewModel ?? new ClientAppLogViewModel()
-        //             },
-        //             {
-        //                 x => x.TitleOkButton, titleOkButton
-        //             },
-        //             {
-        //                 x => x.IsUpdate, isUpdate
-        //             },
-        //             {
-        //                 x => x.Uri, BaseSettingsApp?.BaseUrlApiWebHttp + "VideoCategory"
-        //             },
-        //             {
-        //                 x => x.Token, Token
-        //             }
-        //         };
-        //     IsUpdate = isUpdate;
-        //     var options = new MudBlazor.DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true, BackdropClick = false };
-        //     var dialog = await DialogService!.ShowAsync<SquadAddUpdate>(TitileDialog, parameters, options);
-        //     var result = await dialog.Result;
-
-        //     if (!result!.Canceled)
-        //     {
-        //         var data = (EntityDbResponse<ClientAppLogViewModel>)result.Data!;
-        //         if (data != null)
-        //         {
-        //             await LoadData();
-        //             await Swal!.FireAsync(new SweetAlertOptions()
-        //             {
-        //                 Title = titleOkButton,
-        //                 Text = data.MessageStatus?.Message,
-        //                 Icon = data.MessageStatus?.StatusCode == System.Net.HttpStatusCode.OK ? SweetAlertIcon.Success : SweetAlertIcon.Error
-        //             });
-        //         }
-        //     }
-        //     else
-        //     {
-        //         await Swal!.FireAsync(new SweetAlertOptions()
-        //         {
-        //             Title = titleOkButton,
-        //             Text = "Operation Canceled !",
-        //             Icon = SweetAlertIcon.Warning
-        //         });
-        //     }
-        //     if (isUpdate) IsUpdate = false;
-        // }
-        // catch (Exception ex)
-        // {
-        //     var log = LoggingMessaging.LoggingMessageError(
-        //         nameSpaceName: "TriviaRoyaleGame.Client.Pages",
-        //         statusCodeInt: (int)HttpStatusCode.InternalServerError,
-        //         statusCode: HttpStatusCode.InternalServerError.ToString(),
-        //         actionName: "Pages.ClientAppLog.Index.razor - ShowDialogAsync()",
-        //         exception: ex
-        //     );
-        //     await GenericLogService!.CreateAsync(BaseSettingsApp?.BaseUrlApiWebHttp + "Log", Token, new ClientAppLogViewModel()
-        //     {
-        //         Level = "Error",
-        //         Message = log,
-        //         Source = SourceAppProvider?.GetSourceApp(),
-        //     });
-        //     throw new Exception(ex.Message, ex);
-        // }
+        try
+        {
+            var parameters = new DialogParameters<ShowLog>()
+                {
+                    {
+                        x => x.ClientAppLogViewModel, ClientAppLogViewModel ?? new ClientAppLogViewModel()
+                    },
+                    {
+                        x => x.TitleOkButton, titleOkButton
+                    }
+                };
+            var options = new MudBlazor.DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true, BackdropClick = false };
+            var dialog = await DialogService!.ShowAsync<ShowLog>(TitileDialog, parameters, options);
+            var result = await dialog.Result;
+        }
+        catch (Exception ex)
+        {
+            var log = LoggingMessaging.LoggingMessageError(
+                nameSpaceName: "TriviaRoyaleGame.Client.Pages",
+                statusCodeInt: (int)HttpStatusCode.InternalServerError,
+                statusCode: HttpStatusCode.InternalServerError.ToString(),
+                actionName: "Pages.ClientAppLog.Index.razor - ShowDialogAsync()",
+                exception: ex
+            );
+            await GenericLogService!.CreateAsync(BaseSettingsApp?.BaseUrlApiWebHttp + "Log", Token?.Token, new ClientAppLogViewModel()
+            {
+                Level = "Error",
+                Message = log,
+                Source = SourceAppProvider?.GetSourceApp(),
+            });
+            throw new Exception(ex.Message, ex);
+        }
     }
 
     void ShowTooltip(ElementReference elementReference, TooltipOptions? options = null, string? message = default) => TooltipService?.Open(elementReference, message ?? string.Empty, options);

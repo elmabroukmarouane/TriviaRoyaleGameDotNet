@@ -27,14 +27,6 @@
             <span class="mr-2">🏠</span> Home
         </NavLink>
 
-        @* <NavLink href="counter" class="block px-4 py-2 rounded hover:bg-indigo-700" activeClass="bg-indigo-700 font-semibold">
-            <span class="mr-2">➕</span> Counter
-        </NavLink>
-
-        <NavLink href="weather" class="block px-4 py-2 rounded hover:bg-indigo-700" activeClass="bg-indigo-700 font-semibold">
-            <span class="mr-2">☁️</span> Weather
-        </NavLink> *@
-
         <NavLink href="quiz" class="block px-4 py-2 rounded hover:bg-indigo-700" activeClass="bg-indigo-700 font-semibold">
             <span class="mr-2">🧠</span> Trivia Quiz
         </NavLink>
@@ -43,7 +35,7 @@
             <span class="mr-2">🧠</span> Score Board
         </NavLink>
 
-        <AuthorizeView Roles="SuperAdmin">
+        <AuthorizeView Roles="@Role.SuperAdmin.ToString()">
             <Authorized>
                 <NavLink href="client-log-app" class="block px-4 py-2 rounded hover:bg-indigo-700" activeClass="bg-indigo-700 font-semibold">
                     <span class="mr-2">🧠</span> Log App

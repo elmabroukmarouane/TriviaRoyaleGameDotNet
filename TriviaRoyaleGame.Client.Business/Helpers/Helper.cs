@@ -11,12 +11,12 @@ using TriviaRoyaleGame.Client.Domain.Models.Settings;
 namespace TriviaRoyaleGame.Client.Business.Helpers;
 public static class Helper
 {
-    public static string? DecryptToken(string? token)
+    public static string? DecryptToken(string? token, string type)
     {
         if (token == null) return null;
         var handler = new JwtSecurityTokenHandler();
         var tokenResponse = handler.ReadJwtToken(token);
-        return tokenResponse.Claims.FirstOrDefault(c => c.Type == "user")?.Value;
+        return tokenResponse.Claims.FirstOrDefault(c => c.Type.ToLower().Contains(type))?.Value;
     }
 
     public static string CreateToken(UserViewModel userViewModel, JwtAppSettings? jwtAppSettings)
@@ -38,9 +38,15 @@ public static class Helper
     public static UserViewModel? DecryptAndDeserializeUserViewModel(string? token)
     {
         if(token is null) return null;
-        var userLoggedString = DecryptToken(token);
+        var userLoggedString = DecryptToken(token, "user");
         var userLogged = JsonSerializer.Deserialize<UserViewModel>(userLoggedString!);
         return userLogged;
+    }
+
+    public static string? GetRoleConnectedUser(string? token)
+    {
+        if (token is null) return null;
+        return DecryptToken(token, "role"); ;
     }
 
     public static async Task<bool> GetAuthentificationStatus(AuthenticationStateProvider? AuthenticationStateProvider)

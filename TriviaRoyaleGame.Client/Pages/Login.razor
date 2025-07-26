@@ -105,7 +105,7 @@
                 var tokenString = JsonSerializer.Serialize(token);
                 await LocalStorageService!.SetItemEncryptedAsync("token", tokenString, BaseSettingsApp?.OpenerString, BaseSettingsApp?.BaseUrlApiWebHttp + "crypto/encrypt"/*, token.Token*/, CryptoService);
                 var backOfficeAuthenticationStateProvider = (ClientAppAuthenticationStateProvider)AuthenticationStateProvider!;
-                await backOfficeAuthenticationStateProvider.UpdateAuthenticationState(userLogged);
+                await backOfficeAuthenticationStateProvider.UpdateAuthenticationState(userLogged, token.Token);
                 IsBusy = false;
                 Navigation!.NavigateTo("/");
             }
