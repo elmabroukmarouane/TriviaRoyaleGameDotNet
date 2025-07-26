@@ -1,0 +1,19 @@
+﻿<MudDialog>
+    <DialogContent>
+        @ClientAppLogViewModel!.Message
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Info" OnClick="Ok">@TitleOkButton</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance? MudDialog { get; set; }
+    [Parameter]
+    public ClientAppLogViewModel? ClientAppLogViewModel { get; set; }
+    [Parameter]
+    public string? TitleOkButton { get; set; }
+
+    private void Ok() => MudDialog?.Cancel();
+}
