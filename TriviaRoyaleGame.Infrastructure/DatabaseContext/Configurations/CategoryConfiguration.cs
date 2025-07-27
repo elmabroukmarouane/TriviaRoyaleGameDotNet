@@ -5,15 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace TriviaRoyaleGame.Infrastructure.DatabaseContext.Configurations
 {
-    public class QuestionConfiguration : IEntityTypeConfiguration<Question>
+    public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
-        public void Configure(EntityTypeBuilder<Question> builder)
+        public void Configure(EntityTypeBuilder<Category> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.HasOne(x => x.Category)
-                   .WithMany(x => x.Questions)
-                   .HasForeignKey(x => x.CategoryId)
-                   .OnDelete(DeleteBehavior.Cascade);
             builder.Seed();
         }
     }

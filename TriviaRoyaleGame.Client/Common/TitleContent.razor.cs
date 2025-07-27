@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace SquadManagement.FrontEnd.Client.Components.Common
+namespace CATEGORYManagement.FrontEnd.Client.Components.Common
 {
     public partial class TitleContent
     {

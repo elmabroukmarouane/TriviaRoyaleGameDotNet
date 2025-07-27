@@ -1,0 +1,64 @@
+﻿@inject IGenericService<CategoryViewModel>? GenericService
+@inject BaseSettingsApp? BaseSettingsApp
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors">
+            <MudTextField T="string" Label="CATEGORY Name" Placeholder="Enter the CATEGORY Name !" Required="true" RequiredError="CATEGORY Name is required!" @bind-Value=@CategoryViewModel!.Name />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Info" OnClick="Ok" Disabled="!Success || Errors.Count() > 0">@TitleOkButton</MudButton>
+        <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    private bool Success { get; set; } = true;
+    private string[] Errors { get; set; } = [];
+    private MudForm? Form { get; set; }
+    [CascadingParameter]
+    private IMudDialogInstance? MudDialog { get; set; }
+    [Parameter]
+    public CategoryViewModel? CategoryViewModel { get; set; }
+    [Parameter]
+    public string? TitleOkButton { get; set; }
+    [Parameter]
+    public bool IsUpdate { get; set; }
+    [Parameter]
+    public string? Uri { get; set; }
+    [Parameter]
+    public string? Token { get; set; }
+
+    private void Cancel() => MudDialog?.Cancel();
+
+    private async Task Ok()
+    {
+        var CategoryViewModelResponse = new CategoryViewModel();
+        if (IsUpdate)
+        {
+            CategoryViewModelResponse = await GenericService!.UpdateAsync(Uri!, Token, CategoryViewModel!);
+        }
+        else
+        {
+            CategoryViewModelResponse = await GenericService!.CreateAsync(Uri!, Token, CategoryViewModel!);
+        }
+        if (Success || Errors.Length <= 0) MudDialog?.Close(DialogResult.Ok(new EntityDbResponse<CategoryViewModel>()
+        {
+            IsSuccess = true,
+            MessageStatus = CategoryViewModelResponse?.StatusCode == System.Net.HttpStatusCode.OK ?
+            new MessageStatus()
+            {
+                StatusCode = CategoryViewModelResponse?.StatusCode,
+                Message = typeof(CategoryViewModel).ToString().Replace("TriviaRoyaleGame.Client.Domain.Models.", string.Empty).Replace("ViewModel", string.Empty) + " entity" + (IsUpdate ? " updated" : " added") + " successfully"
+            } :
+            new MessageStatus()
+            {
+                StatusCode = CategoryViewModelResponse?.StatusCode,
+                Message = (IsUpdate ? "Update" : "Add") + " Failed !"
+            },
+            Entity = CategoryViewModelResponse
+        }));
+    }
+}

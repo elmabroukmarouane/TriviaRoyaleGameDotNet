@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace SquadManagement.FrontEnd.Client.Components.Common.Table
+namespace CATEGORYManagement.FrontEnd.Client.Components.Common.Table
 {
     public partial class TableContent
     {

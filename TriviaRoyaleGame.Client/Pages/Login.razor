@@ -1,6 +1,7 @@
 ﻿@page "/login"
 @layout LoginLayout
 @inject IGenericService<QuestionViewModel>? GenericService
+@inject IGenericService<ScoreBoardViewModel>? GenericScoreBoardViewModelService
 @inject BaseSettingsApp? BaseSettingsApp
 @inject ILocalStorageService? LocalStorageService
 @inject NavigationManager? Navigation
@@ -104,6 +105,28 @@
             {
                 var tokenString = JsonSerializer.Serialize(token);
                 await LocalStorageService!.SetItemEncryptedAsync("token", tokenString, BaseSettingsApp?.OpenerString, BaseSettingsApp?.BaseUrlApiWebHttp + "crypto/encrypt"/*, token.Token*/, CryptoService);
+                var allScoresConnectedUsers = await GenericScoreBoardViewModelService!.GetEntitiesAsync(BaseSettingsApp?.BaseUrlApiWebHttp + "ScoreBoard/filter", token.Token, new FilterDataModel()
+                {
+                    Includes = "User",
+                    LambdaExpressionModel = new LambdaExpressionModel()
+                    {
+                        RootGroup = new ConditionGroupModel()
+                        {
+                            Conditions = [
+                                new ConditionModel() {
+                                    PropertyName = "UserId",
+                                    ComparisonValue = userLogged.Id.ToString(),
+                                    ComparisonType = "Equal"
+                                }
+                            ]
+                        }
+                    }
+                });
+                if(allScoresConnectedUsers is not null && allScoresConnectedUsers.Any())
+                {
+                    var higherScore = allScoresConnectedUsers.Max(x => x.Score);
+                    await LocalStorageService!.SetItemEncryptedAsync("highScore", higherScore);
+                }
                 var backOfficeAuthenticationStateProvider = (ClientAppAuthenticationStateProvider)AuthenticationStateProvider!;
                 await backOfficeAuthenticationStateProvider.UpdateAuthenticationState(userLogged, token.Token);
                 IsBusy = false;

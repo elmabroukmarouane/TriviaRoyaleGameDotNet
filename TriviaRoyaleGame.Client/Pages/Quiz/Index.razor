@@ -18,7 +18,7 @@
         <!-- 🔵 Progress Bar -->
         <div class="w-full bg-gray-200 rounded-full h-3 mb-6 overflow-hidden">
             <div class="bg-indigo-500 h-3 rounded-full transition-all duration-300 ease-out"
-                 style="width:@($"{(currentQuestionIndex + 1) * 100 / ShuffledQuestions?.Count}%")">
+                 style="width:@(CountQuestion > 0 ? $"{(currentQuestionIndex + 1) * 100 / CountQuestion}%" : 0)">
             </div>
         </div>
 
@@ -74,6 +74,8 @@
                     <h2 class="text-2xl font-bold text-indigo-700">🎉 Quiz Complete!</h2>
                     <p class="mt-4 text-gray-700 text-lg">Your Score:</p>
                     <p class="text-3xl font-bold text-green-600 mt-1">@score / @Questions?.Count</p>
+                    <p class="mt-4 text-gray-700 text-lg">Your High Score is :</p>
+                    <p class="text-3xl font-bold text-green-600 mt-1">@HighScore</p>
 
                     <button class="mt-6 w-full bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700"
                             @onclick="Restart">
@@ -135,9 +137,11 @@
     TokenResponse? Token;
     string? Uri = string.Empty;
     UserViewModel? UserLogged;
+    int CountQuestion = 0;
 
     int remainingTime = 10;
     CancellationTokenSource? cts;
+    int HighScore = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -145,8 +149,13 @@
         if (!isAuthenticated) Navigation!.NavigateTo("/login", true);
         Uri = BaseSettingsApp?.BaseUrlApiWebHttp + "Question";
         Token = await LocalStorageService!.GetItemDecryptedAsync<TokenResponse>("token", BaseSettingsApp?.OpenerString, BaseSettingsApp?.BaseUrlApiWebHttp + "crypto/decrypt"/*, token.Token*/, CryptoService);
+        HighScore = await LocalStorageService!.GetItemDecryptedAsync<int>("highScore");
         UserLogged = Helper.DecryptAndDeserializeUserViewModel(Token?.Token);
-        if(Token is not null) Questions = await GenericService!.GetEntitiesAsync(Uri!, Token?.Token);
+        if(Token is not null) 
+        {
+            Questions = await GenericService!.GetEntitiesAsync(Uri!, Token?.Token);
+            CountQuestion = Questions!.Count;
+        }
         ShuffleQuestions();
         await LoadQuestion();
     }
@@ -164,7 +173,7 @@
     void ShuffleQuestions()
     {
         var rng = new Random();
-        ShuffledQuestions = Questions?.OrderBy(_ => rng.Next()).ToList();
+        ShuffledQuestions = Questions?.OrderBy(_ => rng.Next(0, Questions!.Count)).ToList();
         currentQuestionIndex = 0;
     }
 
@@ -213,11 +222,15 @@
             {
                 if (Token is not null && UserLogged is not null)
                 {
-                    await GenericScoreService!.CreateAsync(Uri!, Token?.Token, new ScoreBoardViewModel
+                    await GenericScoreService!.CreateAsync(BaseSettingsApp?.BaseUrlApiWebHttp + "ScoreBoard"!, Token?.Token, new ScoreBoardViewModel
                     {
                         UserId = UserLogged.Id,
                         Score = score
                     });
+                    if (score > HighScore)
+                    {
+                        await LocalStorageService!.SetItemEncryptedAsync("highScore", score);
+                    }
                 }
                 gameOver = true;
             }

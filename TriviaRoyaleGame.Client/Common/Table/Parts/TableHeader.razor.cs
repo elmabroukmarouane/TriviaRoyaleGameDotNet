@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace SquadManagement.FrontEnd.Client.Components.Common.Table.Parts
+namespace CATEGORYManagement.FrontEnd.Client.Components.Common.Table.Parts
 {
     public partial class TableHeader
     {
