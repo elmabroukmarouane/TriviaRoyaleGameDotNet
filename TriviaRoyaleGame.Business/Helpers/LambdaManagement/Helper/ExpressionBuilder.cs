@@ -1,5 +1,6 @@
-﻿using TriviaRoyaleGame.Business.Helpers.LambdaManagement.Models;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
+//using System.Reflection;
+using TriviaRoyaleGame.Business.Helpers.LambdaManagement.Models;
 
 namespace TriviaRoyaleGame.Business.Helpers.LambdaManagement.Helper
 {
@@ -60,16 +61,26 @@ namespace TriviaRoyaleGame.Business.Helpers.LambdaManagement.Helper
                         "GreaterThanOrEqual" => Expression.GreaterThanOrEqual(property, GetComparisonValue(propertyType, condition.ComparisonValue)),
                         "LessThan" => Expression.LessThan(property, GetComparisonValue(propertyType, condition.ComparisonValue)),
                         "LessThanOrEqual" => Expression.LessThanOrEqual(property, GetComparisonValue(propertyType, condition.ComparisonValue)),
+                        //"Max" => Expression.Call(
+                        //    GetMathMethod("Max", underlyingType),
+                        //    property,
+                        //    GetComparisonValue(propertyType, condition.ComparisonValue)
+                        //),
+                        //"Min" => Expression.Call(
+                        //    GetMathMethod("Min", underlyingType),
+                        //    property,
+                        //    GetComparisonValue(propertyType, condition.ComparisonValue)
+                        //),
 
                         // String-specific comparisons
                         "Contains" when underlyingType == typeof(string) =>
-                            Expression.Call(property, typeof(string).GetMethod("Contains", new[] { typeof(string) })!, GetComparisonValue(propertyType, condition.ComparisonValue)),
+                            Expression.Call(property, typeof(string).GetMethod("Contains", [typeof(string)])!, GetComparisonValue(propertyType, condition.ComparisonValue)),
                         "NotContains" when underlyingType == typeof(string) =>
-                            Expression.Not(Expression.Call(property, typeof(string).GetMethod("Contains", new[] { typeof(string) })!, GetComparisonValue(propertyType, condition.ComparisonValue))),
+                            Expression.Not(Expression.Call(property, typeof(string).GetMethod("Contains", [typeof(string)])!, GetComparisonValue(propertyType, condition.ComparisonValue))),
                         "StartsWith" when underlyingType == typeof(string) =>
-                            Expression.Call(property, typeof(string).GetMethod("StartsWith", new[] { typeof(string) })!, GetComparisonValue(propertyType, condition.ComparisonValue)),
+                            Expression.Call(property, typeof(string).GetMethod("StartsWith", [typeof(string)])!, GetComparisonValue(propertyType, condition.ComparisonValue)),
                         "EndsWith" when underlyingType == typeof(string) =>
-                            Expression.Call(property, typeof(string).GetMethod("EndsWith", new[] { typeof(string) })!, GetComparisonValue(propertyType, condition.ComparisonValue)),
+                            Expression.Call(property, typeof(string).GetMethod("EndsWith", [typeof(string)])!, GetComparisonValue(propertyType, condition.ComparisonValue)),
 
                         // Unsupported comparison type
                         _ => throw new NotSupportedException($"Comparison type '{condition.ComparisonType}' is not supported for property '{condition.PropertyName}'.")
@@ -91,6 +102,27 @@ namespace TriviaRoyaleGame.Business.Helpers.LambdaManagement.Helper
 
             return combined ?? Expression.Constant(true);
         }
+
+
+
+        // Json to use for Min and Max
+        //{
+        //    "PropertyName": "Score",
+        //    "ComparisonType": "Max",
+        //    "ComparisonValue": 100
+        //}
+
+        //private static MethodInfo GetMathMethod(string methodName, Type type)
+        //{
+        //    // Support int, double, decimal, float, long, etc.
+        //    var method = typeof(Math).GetMethods()
+        //        .Where(m => m.Name == methodName && m.GetParameters().Length == 2)
+        //        .FirstOrDefault(m => m.GetParameters()[0].ParameterType == type && m.GetParameters()[1].ParameterType == type);
+
+        //    return method ?? throw new NotSupportedException($"Math.{methodName} is not supported for type {type.Name}");
+        //}
+
+
 
         // Helper method to get comparison value while handling null
         private static Expression GetComparisonValue(Type propertyType, object? comparisonValue)

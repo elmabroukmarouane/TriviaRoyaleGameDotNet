@@ -32,7 +32,14 @@ namespace TriviaRoyaleGame.Api.DtoModel.Profiles
 
             // Question - QuestionViewModel
             CreateMap<Question, QuestionViewModel>()
-                .ReverseMap();
+                .ForMember(dest => dest.CategoryViewModel, opt => opt.Ignore())
+                .ForMember(dest => dest.CategoryViewModel, opt =>
+                {
+                    opt.PreCondition(src => src.Category != null);
+                    opt.MapFrom(src => src.Category);
+                })
+                .ReverseMap()
+                .ForMember(dest => dest.Category, opt => opt.Ignore()); // Avoid loop
 
             // ClientAppLog - QuestionViewModel
             CreateMap<ClientAppLog, ClientAppLogViewModel>()
@@ -52,6 +59,17 @@ namespace TriviaRoyaleGame.Api.DtoModel.Profiles
                 })
                 .ReverseMap()
                 .ForMember(dest => dest.User, opt => opt.Ignore()); // Avoid loop
+
+            // Category -> CategoryViewModel
+            CreateMap<Category, CategoryViewModel>()
+                .ForMember(dest => dest.QuestionViewModels, opt => opt.Ignore())
+                .ForMember(dest => dest.QuestionViewModels, opt =>
+                {
+                    opt.PreCondition(src => src.Questions != null);
+                    opt.MapFrom(src => src.Questions);
+                })
+                .ReverseMap()
+                .ForMember(dest => dest.Questions, opt => opt.Ignore());
         }
     }
 }

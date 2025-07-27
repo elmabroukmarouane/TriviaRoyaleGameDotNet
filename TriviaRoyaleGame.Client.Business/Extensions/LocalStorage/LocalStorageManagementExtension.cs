@@ -41,15 +41,15 @@ public static class LocalStorageManagementExtension
                 CryptoSecret = passwordEncyption,
                 CryptoText = entityJsonBase64
             }, uri/*, token*/); //await Helper.DecryptAsync(entityJsonBase64, passwordEncyption);
+
+            if (entityJson == null) return default;
+            entityJson = JsonSerializer.Deserialize<string>(entityJson);
         }
         else
         {
             entityJsonByte = Convert.FromBase64String(entityJsonBase64);
             entityJson = Encoding.UTF8.GetString(entityJsonByte);
         }
-
-        if(entityJson == null) return default;
-        entityJson = JsonSerializer.Deserialize<string>(entityJson);
         if (entityJson == null) return default;
         var entity = JsonSerializer.Deserialize<TEntityModelView>(entityJson);
         return entity;

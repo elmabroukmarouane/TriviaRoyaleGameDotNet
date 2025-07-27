@@ -1,0 +1,318 @@
+﻿@page "/category"
+@attribute [Authorize(Roles = "SuperAdmin")]
+@using System.Text.Json
+@inject IJSRuntime? JSRuntime
+@inject BaseSettingsApp? BaseSettingsApp
+@inject ILocalStorageService? LocalStorageService
+@inject IGenericService<CategoryViewModel>? GenericService
+@inject TooltipService? TooltipService
+@inject SweetAlertService? Swal
+@inject IDialogService? DialogService
+@inject ISourceAppProvider? SourceAppProvider
+@inject IGenericService<ClientAppLogViewModel>? GenericLogService
+@inject NavigationManager? Navigation
+@inject AuthenticationStateProvider? AuthenticationStateProvider
+@inject ICryptoService? CryptoService
+@implements IComponent
+@implements IDisposable
+
+<PageTitle>Category - Trivia Quiz</PageTitle>
+
+<style>
+    .label-bold-summary {
+    font-weight: bold;
+    }
+</style>
+
+<div class="container-fluid px-4">
+    <TitleContent Title="Categories" />
+    <DescriptionCardContent>
+        This is the Categories module
+    </DescriptionCardContent>
+    <div class="card mb-4">
+        <TableHeader>
+            <i class="fas fa-table me-1"></i> Categorys Table
+        </TableHeader>
+        <RadzenFieldset @ref="RadzenFieldsetUpload" AllowCollapse="true" class="m-2">
+            <HeaderTemplate>
+                <span class="d-inline-flex align-items-center align-middle">
+                    <RadzenIcon Icon="upload_file" class="me-1" /><b>Add</b>
+                </span>
+            </HeaderTemplate>
+            <ChildContent>
+                <RadzenCard>
+                    <RadzenButton class="mb-4" Icon="add" ButtonStyle="ButtonStyle.Primary" Text="Add" Variant="Radzen.Variant.Filled" Size="ButtonSize.Medium" MouseEnter="@(args => ShowTooltip(args, CreateTooltipOptions(), "Add"))" Click="@(e => ShowDialogAsync())" Disabled="@IsUpdate" />
+                </RadzenCard>
+            </ChildContent>
+            <SummaryTemplate>
+                <RadzenCard class="m-2">
+                    <label class="label-bold-summary">Click on + to show ADD Button</label>
+                </RadzenCard>
+            </SummaryTemplate>
+        </RadzenFieldset>
+        <RadzenFieldset @ref="RadzenFieldsetDataGrid" AllowCollapse="true" class="mb-2 ms-2 me-2">
+            <HeaderTemplate>
+                <span class="d-inline-flex align-items-center align-middle">
+                    <RadzenIcon Icon="category" class="me-1" /><b>Categories List</b>
+                </span>
+            </HeaderTemplate>
+            <ChildContent>
+                @if (IsLoading)
+                {
+                    <LoadingPage />
+                }
+                else 
+                {
+                    <MudTable Items="@Items" FixedHeader="true" Dense="true" Hover="true" Bordered="false" Striped="true" Filter="new Func<CategoryViewModel,bool>(FilterFunc1)" @bind-SelectedItem="SelectedItem" MultiSelection="true" SelectionChangeable="true" @bind-SelectedItems="SelectedItems">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Items List</MudText>
+                            <MudSpacer />
+                            <MudTextField @bind-Value="TableSearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh><MudTableSortLabel SortBy="new Func<CategoryViewModel, string>(x => x?.Id!.ToString()!)">ID</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<CategoryViewModel, string>(x => x?.Name!)">Name</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<CategoryViewModel, string>(x => x?.CreatedBy!)">Created By</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<CategoryViewModel, string>(x => x?.CreateDate!.ToString()!)">Created Date</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<CategoryViewModel, string>(x => x?.UpdatedBy!)">Updated By</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<CategoryViewModel, string>(x => x?.UpdateDate!.ToString()!)">Updated Date</MudTableSortLabel></MudTh>
+                            <MudTh>Actions</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Id</MudTd>
+                            <MudTd DataLabel="Name">@context.Name</MudTd>
+                            <MudTd DataLabel="CreatedBy">@context.CreatedBy</MudTd>
+                            <MudTd DataLabel="CreateDate">@context.CreateDate.ToString()</MudTd>
+                            <MudTd DataLabel="UpdatedBy">@context.UpdatedBy</MudTd>
+                            <MudTd DataLabel="UpdateDate">@context.UpdateDate.ToString()</MudTd>
+                            <MudTd>
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Primary" Variant="Radzen.Variant.Filled" Size="ButtonSize.Medium" @onclick:stopPropagation="true" MouseEnter="@(args => ShowTooltip(args, CreateTooltipOptions(), "Update"))" Click="@(e => ShowDialogAsync("Update", context, true, "Update"))" />
+                                <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Radzen.Variant.Filled" Size="ButtonSize.Medium" @onclick:stopPropagation="true" MouseEnter="@(args => ShowTooltip(args, CreateTooltipOptions(), "Delete"))" Click="@(e => ShowDeleteDialogAsync(context))" />
+                            </MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                }
+            </ChildContent>
+            <SummaryTemplate>
+                <RadzenCard class="mb-2 ms-2 me-2">
+                    <label class="label-bold-summary">@Count @(Count > 1 ? "Categories" : "Category")</label>
+                </RadzenCard>
+            </SummaryTemplate>
+        </RadzenFieldset>
+    </div>
+</div>
+
+@code {
+    private string TitleSwalTitle { get; set; } = string.Empty;
+    private string MessageSwalTitle { get; set; } = string.Empty;
+    public static IList<CategoryViewModel>? Items { get; set; }
+    public bool IsLoading { get; set; } = false;
+    public int Count = 0;
+    private RadzenFieldset? RadzenFieldsetUpload { get; set; }
+    private RadzenFieldset? RadzenFieldsetDataGrid { get; set; }
+    private CategoryViewModel SelectedItem { get; set; } = new();
+    private HashSet<CategoryViewModel>? SelectedItems { get; set; }
+    private bool IsUpdate { get; set; } = false;
+    public string? TableSearchString { get; set; } = string.Empty;
+    TokenResponse? Token { get; set; }
+    UserViewModel? UserLogged { get; set; }
+    [Parameter]
+    public string? Uri { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await Helper.GetAuthentificationStatus(AuthenticationStateProvider);
+        if (!isAuthenticated) Navigation!.NavigateTo("/login", true);
+        Uri = BaseSettingsApp?.BaseUrlApiWebHttp + "Category";
+        Token = await LocalStorageService!.GetItemDecryptedAsync<TokenResponse>("token", BaseSettingsApp?.OpenerString, BaseSettingsApp?.BaseUrlApiWebHttp + "crypto/decrypt", CryptoService);
+        UserLogged = Helper.DecryptAndDeserializeUserViewModel(Token?.Token);
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            IsLoading = true;
+            Items = await GenericService!.GetEntitiesAsync(Uri!, Token?.Token);
+            Items = Items?.OrderByDescending(x => x.Id).ToList();
+            Count = Items != null ? Items.Count : 0;
+        }
+        catch (Exception ex)
+        {
+            var log = LoggingMessaging.LoggingMessageError(
+                nameSpaceName: "TriviaRoyaleGame.Client.Pages.Administration",
+                statusCodeInt: (int)HttpStatusCode.InternalServerError,
+                statusCode: HttpStatusCode.InternalServerError.ToString(),
+                actionName: "Category.Index.razor - LoadData()",
+                exception: ex
+            );
+            await GenericLogService!.CreateAsync(BaseSettingsApp?.BaseUrlApiWebHttp + "Log", Token?.Token, new ClientAppLogViewModel()
+            {
+                Level = "Error",
+                Message = log,
+                Source = SourceAppProvider?.GetSourceApp(),
+            });
+            throw new Exception(ex.Message, ex);
+        }
+        finally { IsLoading = false; }
+    }
+
+    private bool FilterFunc1(CategoryViewModel item) => GenericService!.FilterFunc(item, TableSearchString);
+
+    private async Task ShowDialogAsync(
+        string TitileDialog = "Add",
+        CategoryViewModel? CategoryViewModel = null,
+        bool isUpdate = false,
+        string titleOkButton = "Add")
+    {
+        try
+        {
+            var parameters = new DialogParameters<AddUpdate>()
+                {
+                    {
+                        x => x.CategoryViewModel, CategoryViewModel ?? new CategoryViewModel()
+                    },
+                    {
+                        x => x.TitleOkButton, titleOkButton
+                    },
+                    {
+                        x => x.IsUpdate, isUpdate
+                    },
+                    {
+                        x => x.Uri, BaseSettingsApp?.BaseUrlApiWebHttp + "Category"
+                    },
+                    {
+                        x => x.Token, Token?.Token
+                    }
+                };
+            IsUpdate = isUpdate;
+            var options = new MudBlazor.DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true, BackdropClick = false };
+            var dialog = await DialogService!.ShowAsync<AddUpdate>(TitileDialog, parameters, options);
+            var result = await dialog.Result;
+
+            if (!result!.Canceled)
+            {
+                var data = (EntityDbResponse<CategoryViewModel>)result.Data!;
+                if (data != null)
+                {
+                    await LoadData();
+                    await Swal!.FireAsync(new SweetAlertOptions()
+                    {
+                        Title = titleOkButton,
+                        Text = data.MessageStatus?.Message,
+                        Icon = data.MessageStatus?.StatusCode == System.Net.HttpStatusCode.OK ? SweetAlertIcon.Success : SweetAlertIcon.Error
+                    });
+                }
+            }
+            else
+            {
+                await Swal!.FireAsync(new SweetAlertOptions()
+                {
+                    Title = titleOkButton,
+                    Text = "Operation Canceled !",
+                    Icon = SweetAlertIcon.Warning
+                });
+            }
+            if (isUpdate) IsUpdate = false;
+        }
+        catch (Exception ex)
+        {
+            var log = LoggingMessaging.LoggingMessageError(
+                nameSpaceName: "TriviaRoyaleGame.Client.Pages.Administration",
+                statusCodeInt: (int)HttpStatusCode.InternalServerError,
+                statusCode: HttpStatusCode.InternalServerError.ToString(),
+                actionName: "Category.Index.razor - ShowDialogAsync()",
+                exception: ex
+            );
+            await GenericLogService!.CreateAsync(BaseSettingsApp?.BaseUrlApiWebHttp + "Log", Token?.Token, new ClientAppLogViewModel()
+            {
+                Level = "Error",
+                Message = log,
+                Source = SourceAppProvider?.GetSourceApp(),
+            });
+            throw new Exception(ex.Message, ex);
+        }
+    }
+
+    private async Task ShowDeleteDialogAsync(
+        CategoryViewModel? CategoryViewModel = null,
+        string TitileDialog = "Delete",
+        string titleOkButton = "Delete")
+    {
+        try
+        {
+            var parameters = new DialogParameters<Delete>()
+                {
+                    {
+                        x => x.ContentMessageDelete, "Are you sure to delete this row ?"
+                    },
+                    {
+                        x => x.CategoryViewModel, CategoryViewModel ?? new CategoryViewModel()
+                    },
+                    {
+                        x => x.TitleOkButton, titleOkButton
+                    },
+                    {
+                        x => x.Uri, BaseSettingsApp?.BaseUrlApiWebHttp + "Category"
+                    },
+                    {
+                        x => x.Token, Token?.Token
+                    }
+                };
+            var options = new MudBlazor.DialogOptions() { CloseButton = true, BackdropClick = false };
+            var dialog = await DialogService!.ShowAsync<Delete>(TitileDialog, parameters, options);
+            var result = await dialog.Result;
+
+            if (!result!.Canceled)
+            {
+                var data = (EntityDbResponse<CategoryViewModel>)result.Data!;
+                if (data != null)
+                {
+                    await LoadData();
+                    await Swal!.FireAsync(new SweetAlertOptions()
+                    {
+                        Title = titleOkButton,
+                        Text = data.MessageStatus?.Message,
+                        Icon = data.MessageStatus?.StatusCode == System.Net.HttpStatusCode.OK ? SweetAlertIcon.Success : SweetAlertIcon.Error
+                    });
+                }
+            }
+            else
+            {
+                await Swal!.FireAsync(new SweetAlertOptions()
+                {
+                    Title = titleOkButton,
+                    Text = "Operation Canceled !",
+                    Icon = SweetAlertIcon.Warning
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            var log = LoggingMessaging.LoggingMessageError(
+                nameSpaceName: "TriviaRoyaleGame.Client.Pages.Administration",
+                statusCodeInt: (int)HttpStatusCode.InternalServerError,
+                statusCode: HttpStatusCode.InternalServerError.ToString(),
+                actionName: "Category.Index.razor - ShowDeleteDialogAsync()",
+                exception: ex
+            );
+            await GenericLogService!.CreateAsync(BaseSettingsApp?.BaseUrlApiWebHttp + "Log", Token?.Token, new ClientAppLogViewModel()
+            {
+                Level = "Error",
+                Message = log,
+                Source = SourceAppProvider?.GetSourceApp(),
+            });
+            throw new Exception(ex.Message, ex);
+        }
+    }
+
+    void ShowTooltip(ElementReference elementReference, TooltipOptions? options = null, string? message = default) => TooltipService?.Open(elementReference, message ?? string.Empty, options);
+
+    private TooltipOptions CreateTooltipOptions() => new() { Position = TooltipPosition.Top, Style = "background-color: var(--rz-secondary); color: var(--rz-text-contrast-color)" };
+
+    public void Dispose() => GC.SuppressFinalize(TooltipService!);
+} 

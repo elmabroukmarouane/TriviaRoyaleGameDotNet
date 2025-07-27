@@ -1,0 +1,53 @@
+﻿@inject IGenericService<CategoryViewModel>? GenericService
+@inject BaseSettingsApp? BaseSettingsApp
+
+<MudDialog>
+    <DialogContent>
+        @ContentMessageDelete
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Info" OnClick="Ok" Disabled="!Success || Errors.Count() > 0">@TitleOkButton</MudButton>
+        <MudButton Color="Color.Error" OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private bool Success { get; set; } = true;
+    private string[] Errors { get; set; } = [];
+    [CascadingParameter]
+    private IMudDialogInstance? MudDialog { get; set; }
+    [Parameter]
+    public CategoryViewModel? CategoryViewModel { get; set; }
+    [Parameter]
+    public string? ContentMessageDelete { get; set; }
+    [Parameter]
+    public string? TitleOkButton { get; set; }
+    [Parameter]
+    public string? Uri { get; set; }
+    [Parameter]
+    public string? Token { get; set; }
+
+    private void Cancel() => MudDialog?.Cancel();
+
+    private async Task Ok()
+    {
+        var CategoryViewModelResponse = new CategoryViewModel();
+        CategoryViewModelResponse = await GenericService!.DeleteAsync(Uri!, Token, CategoryViewModel!);
+        if (Success || Errors.Length <= 0) MudDialog?.Close(DialogResult.Ok(new EntityDbResponse<CategoryViewModel>()
+        {
+            IsSuccess = true,
+            MessageStatus = CategoryViewModelResponse?.StatusCode == System.Net.HttpStatusCode.OK ?
+            new MessageStatus()
+            {
+                StatusCode = CategoryViewModelResponse?.StatusCode,
+                Message = typeof(CategoryViewModel).ToString().Replace("TriviaRoyaleGame.Client.Domain.Models.", string.Empty).Replace("ViewModel", string.Empty) + " entity deleted successfully"
+            } :
+            new MessageStatus()
+            {
+                StatusCode = CategoryViewModelResponse?.StatusCode,
+                Message = "Delete Failed !"
+            },
+            Entity = CategoryViewModelResponse
+        }));
+    }
+}

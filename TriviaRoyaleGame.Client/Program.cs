@@ -73,6 +73,7 @@ builder.Services.AddTransient<IGenericService<MemberViewModel>, GenericService<M
 builder.Services.AddTransient<IGenericService<QuestionViewModel>, GenericService<QuestionViewModel>>();
 builder.Services.AddTransient<IGenericService<UserViewModel>, GenericService<UserViewModel>>();
 builder.Services.AddTransient<IGenericService<ScoreBoardViewModel>, GenericService<ScoreBoardViewModel>>();
+builder.Services.AddTransient<IGenericService<CategoryViewModel>, GenericService<CategoryViewModel>>();
 builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<ICryptoService, CryptoService>();
 builder.Services.AddScoped<DialogService>();

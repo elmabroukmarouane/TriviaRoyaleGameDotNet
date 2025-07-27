@@ -54,6 +54,13 @@ public static class AddServices
         self.AddTransient<IGenericTruncateQuery<ScoreBoard>, GenericTruncateQuery<ScoreBoard>>();
         self.AddTransient<IGenericService<ScoreBoard>, GenericService<ScoreBoard>>();
 
+        self.AddTransient<IGenericCreateCommand<Category>, GenericCreateCommand<Category>>();
+        self.AddTransient<IGenericUpdateCommand<Category>, GenericUpdateCommand<Category>>();
+        self.AddTransient<IGenericGetEntitiesQuery<Category>, GenericGetEntitiesQuery<Category>>();
+        self.AddTransient<IGenericDeleteQuery<Category>, GenericDeleteQuery<Category>>();
+        self.AddTransient<IGenericTruncateQuery<Category>, GenericTruncateQuery<Category>>();
+        self.AddTransient<IGenericService<Category>, GenericService<Category>>();
+
         self.AddTransient<IUserCreateCommand, UserCreateCommand>();
         self.AddTransient<IUserUpdateCommand, UserUpdateCommand>();
         self.AddTransient<IGenericGetEntitiesQuery<User>, GenericGetEntitiesQuery<User>>();
